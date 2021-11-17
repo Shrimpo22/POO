@@ -126,8 +126,12 @@ public class GameEngine implements Observer {
 
 					System.out.println("Object x= "+x);
 					System.out.println("Object y= "+y);
-
-					tileList.add(Movable.generate(Object, new Point2D(x,y)));
+					if(Object.equals("Fireman")){
+						fireman = new Fireman(new Point2D(x,y));
+						tileList.add(fireman);
+					}else {
+						tileList.add(Movable.generate(Object, new Point2D(x,y)));
+					}
 				}
 				numLine ++;
 			}
