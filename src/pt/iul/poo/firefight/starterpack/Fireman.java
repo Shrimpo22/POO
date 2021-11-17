@@ -5,15 +5,13 @@ import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
 // Esta classe de exemplo esta' definida de forma muito basica, sem relacoes de heranca
-// Tem atributos e metodos repetidos em relacao ao que está definido noutras classes 
+// Tem atributos e metodos repetidos em relacao ao que estï¿½ definido noutras classes 
 // Isso sera' de evitar na versao a serio do projeto
 
-public class Fireman implements ImageTile{
-
-	private Point2D position;
-
+public class Fireman extends GameElement{
+	
 	public Fireman(Point2D position) {
-		this.position = position;
+		super(position);
 	}
 	
 	// Move numa direcao aleatoria 
@@ -47,15 +45,10 @@ public class Fireman implements ImageTile{
 		this.position = position;
 	}
 
-	// Metodos de ImageTile
+	// Metodos de GameElement
 	@Override
 	public String getName() {
 		return "fireman";
-	}
-
-	@Override
-	public Point2D getPosition() {
-		return position;
 	}
 	
 	@Override
