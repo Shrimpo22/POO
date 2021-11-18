@@ -1,5 +1,6 @@
 package pt.iul.poo.firefight.starterpack;
 
+import debug.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -30,18 +31,20 @@ import pt.iul.ista.poo.utils.Point2D;
 
 public class GameEngine implements Observer {
 
+	private int turn = 0;
+
 	// Dimensoes da grelha de jogo
 	public static final int GRID_HEIGHT = 10;
 	public static final int GRID_WIDTH = 10;
 
-	// Pontos referentes às extremidades da grelha de jogo
+	// Pontos referentes ï¿½s extremidades da grelha de jogo
 
 	private static final Point2D min = new Point2D(0,0);
 	private static final Point2D max = new Point2D(GameEngine.GRID_WIDTH - 1, GameEngine.GRID_HEIGHT - 1);
 
 
 	private ImageMatrixGUI gui = ImageMatrixGUI.getInstance();  		// Referencia para ImageMatrixGUI (janela de interface com o utilizador) 
-	private List<ImageTile> tileList = new ArrayList<>() ;	// Lista de imagens
+	private List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
 	private Fireman fireman;			// Referencia para o bombeiro
 
 
@@ -62,8 +65,26 @@ public class GameEngine implements Observer {
 	@Override
 	public void update(Observed source) {
 
-		fireman.move();		
-		gui.update();                            // redesenha as imagens na GUI, tendo em conta as novas posicoes
+		Debug.Message("Player Moved", true);
+		fireman.move();
+		Debug.Check("Before Fire List", false);
+//		List<Fire> fires =  getFires();
+//		if(!fires.isEmpty()) {
+//			for(Fire fire : fires) {
+//				Flammable temp = findElement(fire.getPosition());
+//				temp.burn();
+//				if(temp.burnt()==1)
+//					fires.remove(fire);
+//				else if(turn > 2){
+//					//Propagar Fogo
+//				}
+//			}
+//
+//		}
+		gui.update();  
+		turn ++;
+		Debug.Attribute("Turn Number", turn, true);
+		// redesenha as imagens na GUI, tendo em conta as novas posicoes
 	}
 
 
@@ -94,10 +115,12 @@ public class GameEngine implements Observer {
 	// Envio das mensagens para a GUI - note que isto so' precisa de ser feito no inicio
 	// Nao e' suposto re-enviar os objetos se a unica coisa que muda sao as posicoes  
 	private void sendImagesToGUI() {
-		gui.addImages(tileList);
+		Debug.Check("sendImagesGUI", false);
+		gui.addImages(elementList);
+		Debug.Message("Images Sent to GUI", false);
 	}
 
-	// Método para ler um nível
+	// Mï¿½todo para ler um nï¿½vel
 
 	public void readLevel(String file){
 		try {
@@ -109,28 +132,31 @@ public class GameEngine implements Observer {
 
 				if(numLine<10) {
 					String temp = lvl.nextLine();
-					System.out.println(numLine + ": 1");
+					Debug.Attribute("Line Number 1", numLine, false);
 
 					for(int x=0; x<10; x++) {
 						char Object = temp.charAt(x);
 						Point2D ObjectPosition = new Point2D(x,numLine);
-						tileList.add(Terrain.generate(Object, ObjectPosition));
+						elementList.add(Terrain.generate(Object, ObjectPosition));
 					}
 
 				}else {
-					System.out.println(numLine + ": 2");
+					Debug.Attribute("Line Number 2", numLine, false);
 					String Object = lvl.next();
-					System.out.println(Object);
+					Debug.Attribute("Object is", Object, false);
 					int x = lvl.nextInt();
 					int y = lvl.nextInt();
 
-					System.out.println("Object x= "+x);
-					System.out.println("Object y= "+y);
+					Debug.Attribute("X", x, false);
+					Debug.Attribute("Y", y, false);
+
+
 					if(Object.equals("Fireman")){
-						fireman = new Fireman(new Point2D(x,y));
-						tileList.add(fireman);
+						elementList.add(fireman = (Fireman)Movable.generate(Object, new Point2D(x,y)));
+						Debug.Message(Object + "Created", false);
 					}else {
-						tileList.add(Movable.generate(Object, new Point2D(x,y)));
+						elementList.add(Movable.generate(Object, new Point2D(x,y)));
+						Debug.Message(Object + "Created", false);
 					}
 				}
 				numLine ++;
@@ -138,12 +164,12 @@ public class GameEngine implements Observer {
 			lvl.close();
 
 		}catch(FileNotFoundException e) {
-			System.out.println("Ficheiro não encontrado");
+			System.out.println("Ficheiro nï¿½o encontrado");
 
 		}
 	}
 
-	// Método para os objetos não saírem da janela
+	// Mï¿½todo para os objetos nï¿½o saï¿½rem da janela
 
 	public static Point2D clamp(Point2D p) {
 
@@ -166,7 +192,24 @@ public class GameEngine implements Observer {
 		return result;
 	}
 
+	public List<Fire> getFires(){
+		Debug.Check("getFires", false);
+		List<Fire> fires = new ArrayList<>();		
+		Debug.Check("getFires list created", false);
+		for(ImageTile ge: elementList)
+			if(ge instanceof Fire) {
+				fires.add((Fire)ge);
+				Debug.Attribute("FiresList", ge, false);
+			}
 
+		return fires;
+	}
 
-
+	public Flammable findElement(Point2D position) {
+		for(ImageTile ge : elementList)
+			if(ge instanceof Flammable)
+				if(ge.getPosition() == position)
+					return (Flammable) ge;
+		return null;
+	}
 }

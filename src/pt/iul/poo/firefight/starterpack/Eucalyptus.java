@@ -1,16 +1,25 @@
 package pt.iul.poo.firefight.starterpack;
 
+import debug.Debug;
 import pt.iul.ista.poo.utils.Point2D;
 
 public class Eucalyptus extends Terrain {
+	private static final int BURN_TURNS = 5;
+	private static final double PROBABILITY = 0.10;
 
 	public Eucalyptus(Point2D position) {
-		this.position = position;
+		super(position, BURN_TURNS, PROBABILITY);
 	}
 	
 	@Override
 	public String getName() {
-		return "eucaliptus";
+		if(burnt() == 0) {
+			Debug.Check("eucaliptus", false);
+			return "eucaliptus";
+		}else {
+			Debug.Check("burnteucaliptus", false);
+			return "burnteucaliptus";
+		}
 	}
 
 	@Override
@@ -22,5 +31,4 @@ public class Eucalyptus extends Terrain {
 	public int getLayer() {
 		return 0;
 	}
-
 }

@@ -17,4 +17,11 @@ public abstract class GameElement implements ImageTile{
 	public int getLayer() {
 		return 0;
 	}
+
+	@Override
+	public String toString() {
+		return "GameElement ["+getName()+"] | Position: ("+getPosition().getX()+","+getPosition().getY()+") | Layer:"+getLayer();
+	}
+	
+
 }

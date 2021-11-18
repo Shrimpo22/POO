@@ -5,9 +5,8 @@ import pt.iul.ista.poo.utils.Point2D;
 public class Land extends Terrain {
 
 	public Land(Point2D position) {
-		this.position = position;
+		super(position, 0, 0);
 	}
-	
 	@Override
 	public String getName() {
 		return "land";

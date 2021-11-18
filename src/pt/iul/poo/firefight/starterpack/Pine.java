@@ -1,27 +1,25 @@
 package pt.iul.poo.firefight.starterpack;
 
+import debug.Debug;
 import pt.iul.ista.poo.utils.Point2D;
 
-//Esta classe de exemplo esta' definida de forma muito basica, sem relacoes de heranca
-//Tem atributos e metodos repetidos em relacao ao que está definido noutras classes 
-//Isso sera' de evitar na versao a serio do projeto
-
 public class Pine extends Terrain {
-
-	private Point2D position;
+	private static final int BURN_TURNS = 10;
+	private static final double PROBABILITY = 0.5;
 
 	public Pine(Point2D position) {
-		this.position = position;
-	}
-	
-	@Override
-	public String getName() {
-		return "pine";
+		super(position, BURN_TURNS, PROBABILITY);
 	}
 
 	@Override
-	public Point2D getPosition() {
-		return position;
+	public String getName() {
+		if(burnt() == 0) {
+			Debug.Check("pine", false);
+			return "pine";
+		}else {
+			Debug.Check("burntpine", false);
+			return "burntpine";
+		}
 	}
 
 	@Override
