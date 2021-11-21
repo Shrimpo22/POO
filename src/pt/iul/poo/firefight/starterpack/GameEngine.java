@@ -1,6 +1,6 @@
 package pt.iul.poo.firefight.starterpack;
 
-import debug.*;
+import debug.Debug;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -12,6 +12,8 @@ import pt.iul.ista.poo.gui.ImageTile;
 import pt.iul.ista.poo.observer.Observed;
 import pt.iul.ista.poo.observer.Observer;
 import pt.iul.ista.poo.utils.Point2D;
+import pt.iul.ista.poo.utils.Direction;
+import java.util.Random;
 
 // Note que esta classe e' um exemplo - nao pretende ser o inicio do projeto, 
 // embora tambem possa ser usada para isso.
@@ -31,7 +33,7 @@ import pt.iul.ista.poo.utils.Point2D;
 
 public class GameEngine implements Observer {
 
-	private int turn = 0;
+	private static int turn = 0;
 
 	// Dimensoes da grelha de jogo
 	public static final int GRID_HEIGHT = 10;
@@ -43,8 +45,13 @@ public class GameEngine implements Observer {
 	private static final Point2D max = new Point2D(GameEngine.GRID_WIDTH - 1, GameEngine.GRID_HEIGHT - 1);
 
 
-	private ImageMatrixGUI gui = ImageMatrixGUI.getInstance();  		// Referencia para ImageMatrixGUI (janela de interface com o utilizador) 
-	private List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
+	private static ImageMatrixGUI gui = ImageMatrixGUI.getInstance();  // Referencia para ImageMatrixGUI (janela de interface com o utilizador) 
+
+
+	private static List<Fire> fires = new ArrayList<>();
+	private static List<Fire> firesToRemove = new ArrayList<>();
+	private static List<Fire> firesToAdd = new ArrayList<>();
+	private static List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
 	private Fireman fireman;			// Referencia para o bombeiro
 
 
@@ -65,25 +72,22 @@ public class GameEngine implements Observer {
 	@Override
 	public void update(Observed source) {
 
-		Debug.Message("Player Moved", true);
+		removeAllDoused();
+
+
+		Debug.line(true);
+
 		fireman.move();
-		Debug.Check("Before Fire List", false);
-//		List<Fire> fires =  getFires();
-//		if(!fires.isEmpty()) {
-//			for(Fire fire : fires) {
-//				Flammable temp = findElement(fire.getPosition());
-//				temp.burn();
-//				if(temp.burnt()==1)
-//					fires.remove(fire);
-//				else if(turn > 2){
-//					//Propagar Fogo
-//				}
-//			}
-//
-//		}
+		Debug.message("Player Moved", true);
+
+		spread();
+		tick();
+
+		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
+
 		gui.update();  
 		turn ++;
-		Debug.Attribute("Turn Number", turn, true);
+		Debug.attribute("Turn Number", turn, true);
 		// redesenha as imagens na GUI, tendo em conta as novas posicoes
 	}
 
@@ -93,31 +97,15 @@ public class GameEngine implements Observer {
 		//		createTerrain();      // criar mapa do terreno
 		//		createMoreStuff();    // criar mais objetos (bombeiro, fogo,...)
 		sendImagesToGUI();    // enviar as imagens para a GUI
+		getFires();
 	}
 
-
-	// Criacao do terreno - so' pinheiros neste exemplo 
-	//	private void createTerrain() {
-	//
-	//	}
-
-
-	// Criacao de mais objetos - neste exemplo e' um bombeiro e dois fogos
-	//	private void createMoreStuff() {
-	//					fireman = new Fireman( new Point2D(5,5));
-	//					tileList.add(fireman);
-	//					
-	//					tileList.add(new Fire(new Point2D(3,3)));
-	//					tileList.add(new Fire(new Point2D(3,2)));
-	//	}
 
 
 	// Envio das mensagens para a GUI - note que isto so' precisa de ser feito no inicio
 	// Nao e' suposto re-enviar os objetos se a unica coisa que muda sao as posicoes  
 	private void sendImagesToGUI() {
-		Debug.Check("sendImagesGUI", false);
 		gui.addImages(elementList);
-		Debug.Message("Images Sent to GUI", false);
 	}
 
 	// M�todo para ler um n�vel
@@ -132,7 +120,7 @@ public class GameEngine implements Observer {
 
 				if(numLine<10) {
 					String temp = lvl.nextLine();
-					Debug.Attribute("Line Number 1", numLine, false);
+					Debug.attribute("Line Number 1", numLine, 2);
 
 					for(int x=0; x<10; x++) {
 						char Object = temp.charAt(x);
@@ -141,22 +129,22 @@ public class GameEngine implements Observer {
 					}
 
 				}else {
-					Debug.Attribute("Line Number 2", numLine, false);
+					Debug.attribute("Line Number 2", numLine, 2);
 					String Object = lvl.next();
-					Debug.Attribute("Object is", Object, false);
+					Debug.attribute("Object is", Object, 2);
 					int x = lvl.nextInt();
 					int y = lvl.nextInt();
 
-					Debug.Attribute("X", x, false);
-					Debug.Attribute("Y", y, false);
+					Debug.attribute("X", x, 2);
+					Debug.attribute("Y", y, 2);
 
 
 					if(Object.equals("Fireman")){
 						elementList.add(fireman = (Fireman)Movable.generate(Object, new Point2D(x,y)));
-						Debug.Message(Object + "Created", false);
+						Debug.message(Object + "Created", 2);
 					}else {
 						elementList.add(Movable.generate(Object, new Point2D(x,y)));
-						Debug.Message(Object + "Created", false);
+						Debug.message(Object + "Created", 2);
 					}
 				}
 				numLine ++;
@@ -192,24 +180,101 @@ public class GameEngine implements Observer {
 		return result;
 	}
 
-	public List<Fire> getFires(){
-		Debug.Check("getFires", false);
-		List<Fire> fires = new ArrayList<>();		
-		Debug.Check("getFires list created", false);
+	public void getFires(){
 		for(ImageTile ge: elementList)
 			if(ge instanceof Fire) {
 				fires.add((Fire)ge);
-				Debug.Attribute("FiresList", ge, false);
+				Debug.attribute("FiresList", ge, false);
 			}
-
-		return fires;
 	}
 
-	public Flammable findElement(Point2D position) {
-		for(ImageTile ge : elementList)
-			if(ge instanceof Flammable)
-				if(ge.getPosition() == position)
-					return (Flammable) ge;
+	private static void spread() {
+		if(!fires.isEmpty()) {
+			for(Fire fire : fires) {
+				Debug.line2(3); 
+				Debug.attribute("Fire!", fire, 3);
+
+				Flammable temp = (Flammable)findElement(fire.getPosition(), 0);
+
+				temp.burn();
+				if(temp.burnt()==1) {
+					firesToRemove.add(fire);
+					gui.removeImage(fire);
+				}else if(turn > 2){
+					List<Point2D> neighbours = fire.getPosition().getNeighbourhoodPoints();
+					for(Point2D position : neighbours) {
+
+						position = clamp(position);
+						if(findElement(position, 3) != null) {
+							Debug.message("Found Player!", 3);
+							continue;
+						}
+						Terrain neighbour = (Terrain)findElement(position, 0);
+
+						Random random = new Random();
+
+						if(neighbour.burnt() == 0 && neighbour.getImmunity() == 0 && random.nextInt(20) < neighbour.getProbability()*20) {
+							Fire propagate = new Fire(position);
+							Debug.attribute("Propagate position", position, 1);
+							if(fires.contains(propagate) || firesToRemove.contains(propagate) || firesToAdd.contains(propagate)) {
+								Debug.message("Did not spread!", 1);	
+								continue;
+							}
+							Debug.message("Spreaded!", 1);
+							firesToAdd.add(propagate);
+							gui.addImage(propagate);
+							elementList.add(propagate);
+						}
+					}
+
+				}
+
+			}
+		}
+		fires.removeAll(firesToRemove);
+		elementList.removeAll(firesToRemove);
+		firesToRemove.clear();
+
+		firesToAdd.forEach(n -> {fires.add(n); elementList.add(n);});
+		firesToAdd.clear();
+
+	}
+
+	public static void addElement(ImageTile object) {
+		elementList.add(object);
+		gui.addImage(object);
+	}
+
+	public static void removeElement(ImageTile object) {
+		elementList.remove(object);
+		gui.removeImage(object);
+	}
+
+	public static void removeAllDoused() {
+		for(Fire fire: fires)
+			if(fire.doused() == 1)
+				removeElement(fire);
+		fires.removeIf(n->n.doused()==1);
+	}
+
+	public static GameElement findElement(Point2D position, int layer) {
+		//		Debug.check("findElement", 1);
+		for(ImageTile ge : elementList) {
+			//			Debug.check("For", 1);
+			if(ge.getLayer() == layer) {
+				//				Debug.check("Flammable", 1);
+				//				Debug.equals(ge.getPosition(), position, 1);
+				if(ge.getPosition().equals(position)) {
+					//					Debug.attribute("Element found", ge, 1);
+					return (GameElement) ge;
+				}
+			}
+		}
 		return null;
+	}
+
+	public static void tick() {
+		for(ImageTile ge : elementList)
+			((GameElement) ge).tick();
 	}
 }

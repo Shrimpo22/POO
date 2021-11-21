@@ -19,20 +19,27 @@ public class Fireman extends Movable{
 		int key = ImageMatrixGUI.getInstance().keyPressed();
 		Direction dir = Direction.directionFor(key);
 
-		position = position.plus(dir.asVector());
+		Fire fire = (Fire) GameEngine.findElement(position.plus(dir.asVector()), 1);
+		Terrain terrain = (Terrain) GameEngine.findElement(position.plus(dir.asVector()), 0);
 		
-		position = GameEngine.clamp(position);
+		if(fire != null) {
+			fire.douse(dir);
+			terrain.douse();
+		}else {
+			position = position.plus(dir.asVector());
+			position = GameEngine.clamp(position);
+		}
 	}
 
 	// Verifica se a posicao p esta' dentro da grelha de jogo
-//	public boolean canMoveTo(Point2D p) {
-//
-//		if (p.getX() < 0) return false;
-//		if (p.getY() < 0) return false;
-//		if (p.getX() >= GameEngine.GRID_WIDTH) return false;
-//		if (p.getY() >= GameEngine.GRID_HEIGHT) return false;
-//		return true;
-//	}
+	//	public boolean canMoveTo(Point2D p) {
+	//
+	//		if (p.getX() < 0) return false;
+	//		if (p.getY() < 0) return false;
+	//		if (p.getX() >= GameEngine.GRID_WIDTH) return false;
+	//		if (p.getY() >= GameEngine.GRID_HEIGHT) return false;
+	//		return true;
+	//	}
 
 	public void setPosition(Point2D position) {
 		this.position = position;

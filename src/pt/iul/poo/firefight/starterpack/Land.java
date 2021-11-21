@@ -11,14 +11,4 @@ public class Land extends Terrain {
 	public String getName() {
 		return "land";
 	}
-
-	@Override
-	public Point2D getPosition() {
-		return position;
-	}
-
-	@Override
-	public int getLayer() {
-		return 0;
-	}
 }
