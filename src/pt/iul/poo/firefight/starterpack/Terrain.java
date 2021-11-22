@@ -1,5 +1,6 @@
 package pt.iul.poo.firefight.starterpack;
 
+import debug.Debug;
 import pt.iul.ista.poo.utils.Point2D;
 
 public abstract class Terrain extends GameElement implements Flammable {
@@ -60,7 +61,8 @@ public abstract class Terrain extends GameElement implements Flammable {
 	}
 
 	public void burn() {
-		if(turnsToBurn > 0)
+		Debug.attribute("Terrain["+ this +"], turns to burn: ", turnsToBurn, 2);
+		if(turnsToBurn > 1)
 			turnsToBurn --;
 		else
 			burnt = 1;

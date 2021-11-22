@@ -1,5 +1,4 @@
 package pt.iul.poo.firefight.starterpack;
-
 import pt.iul.ista.poo.gui.ImageTile;
 import pt.iul.ista.poo.utils.Point2D;
 
