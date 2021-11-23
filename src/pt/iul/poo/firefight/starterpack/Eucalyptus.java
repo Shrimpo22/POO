@@ -12,10 +12,10 @@ public class Eucalyptus extends Terrain {
 	
 	@Override
 	public String getName() {
-		if(burnt() == 0) {
-			return "eucaliptus";
-		}else {
+		if(burnt()) {
 			return "burnteucaliptus";
+		}else {
+			return "eucaliptus";
 		}
 	}
 }

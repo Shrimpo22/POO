@@ -6,7 +6,7 @@ public interface Flammable {
 	
 	int getTurnsToBurn();
 	
-	int burnt();
+	boolean burnt();
 	
 	void burn();
 	

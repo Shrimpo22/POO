@@ -12,10 +12,10 @@ public class Undergrowth extends Terrain{
 
 	@Override
 	public String getName() {
-		if(burnt() == 0) {
-			return "grass";
-		}else {
+		if(burnt()) {
 			return "burnt";
+		}else {
+			return "grass";
 		}
 	}
 

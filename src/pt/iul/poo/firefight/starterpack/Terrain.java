@@ -7,17 +7,19 @@ public abstract class Terrain extends GameElement implements Flammable {
 
 	private int BURN_TURNS = 0;
 	private int turnsToBurn;
-	private int burnt;
+	private boolean burnt;
 	private double probability;
 	private int temporalImmunity = 0;
+	private boolean burning;
 
 
 	public Terrain(Point2D position, int BURN_TURNS, double probability) {
 		this.position = position;
-		this.burnt = 0;
+		this.burnt = false;
 		this.BURN_TURNS = BURN_TURNS;
 		turnsToBurn = BURN_TURNS;
 		this.probability = probability;
+		this.burning = false;
 
 	}
 
@@ -46,7 +48,7 @@ public abstract class Terrain extends GameElement implements Flammable {
 		return turnsToBurn;
 	}
 
-	public int burnt() {
+	public boolean burnt() {
 		return burnt;
 	}
 
@@ -65,7 +67,7 @@ public abstract class Terrain extends GameElement implements Flammable {
 		if(turnsToBurn > 1)
 			turnsToBurn --;
 		else
-			burnt = 1;
+			burnt = true;
 	}
 
 	public void douse() {

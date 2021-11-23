@@ -69,10 +69,10 @@ public class GameEngine implements Observer {
 	public void update(Observed source) {
 
 		Debug.line(true);
-		Fire.removeAllDoused();
-		fireman.move();
-		Fire.spreadAll();
+		Fire.putOut();
 		Debug.message("Player Moved", true);
+		fireman.move();
+		Fire.spread();
 		tick();
 
 		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
