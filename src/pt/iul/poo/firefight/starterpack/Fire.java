@@ -14,15 +14,12 @@ import pt.iul.ista.poo.utils.Point2D;
 
 public class Fire extends Movable {
 
-	private static List<Fire> fires;
-	private static List<Fire> firesToRemove = new ArrayList<>();
-	private static List<Fire> firesToAdd = new ArrayList<>();
-
-	private int doused = 0;
+	private boolean doused;
 	private String name = "fire";
 
 	public Fire(Point2D position) {
 		this.position = position;
+		this.doused = false;
 	}
 
 	@Override
@@ -44,13 +41,21 @@ public class Fire extends Movable {
 
 		default: throw new IllegalArgumentException();
 		}
-		doused = 1;
+		doused = true;
 		Terrain terrain = (Terrain) GameEngine.findElement(position, 0);
 		terrain.douse();
 	}
 
-	public int doused() {
+	public boolean doused() {
 		return doused;
+	}
+
+	public static void spread() {
+		Spread.propagate();
+	}
+
+	public static void putOut() {
+		Spread.removeAllDoused();
 	}
 
 	@Override
@@ -69,58 +74,63 @@ public class Fire extends Movable {
 
 	}
 
-	
-	public static void spreadAll() {
-		fires.forEach(n->{Debug.attribute(n, 4); n.spread();});
-		organizeFires();
-	}
 
-	private void spread() {
-		Flammable temp = (Flammable)GameEngine.findElement(position, 0);
-		temp.burn();
-		if(temp.burnt()==1) {
-			firesToRemove.add(this);
-			GameEngine.removeElement(this);
-		}else if(GameEngine.getTurn() > 2){
-					List<Point2D> neighbours = this.getPosition().getNeighbourhoodPoints();
+
+	private static class Spread {
+		private static List<Fire> fires;
+		private static List<Fire> firesToRemove = new ArrayList<>();
+		private static List<Fire> firesToAdd = new ArrayList<>();
+
+		private static void propagate() {
+			fires.forEach(n->{Debug.attribute(n, 4); Spread.spread(n);});
+			organizeFires();
+		}
+
+		private static void spread(Fire fire) {
+			Flammable temp = (Flammable)GameEngine.findElement(fire.getPosition(), 0);
+			if(temp.burnt()) {
+				firesToRemove.add(fire);
+				GameEngine.removeElement(fire);
+			}else
+				if(GameEngine.getTurn() > 2){
+					List<Point2D> neighbours = fire.getPosition().getNeighbourhoodPoints();
 					for(Point2D position : neighbours) {
 						position = GameEngine.clamp(position);
 						if(GameEngine.findElement(position, 3) != null) {
 							continue;
 						}
-						Terrain neighbour = (Terrain)GameEngine.findElement(position, 0);
+						Flammable neighbour = (Flammable)GameEngine.findElement(position, 0);
 						Random random = new Random();
-						if(neighbour.burnt() == 0 && neighbour.getImmunity() == 0 && random.nextInt(20) < neighbour.getProbability()*20) {
+						if(!neighbour.burnt() && neighbour.getImmunity() == 0 && random.nextInt(20) < neighbour.getProbability()*20) {
 							Fire propagate = new Fire(position);
 							if(fires.contains(propagate) || firesToRemove.contains(propagate) || firesToAdd.contains(propagate)) {	
 								continue;
 							}
+							neighbour.ignite();
 							firesToAdd.add(propagate);
 						}
 					}
 				}
-	}
-	
-	public static void removeAllDoused() {
-		if(fires == null) {
-			initializeFires();
 		}
-		fires.forEach(n->{if(n.doused()==1) GameEngine.removeElement(n);});
-		fires.removeIf(n->n.doused()==1);
-	}
-	
 
+		private static void organizeFires() {
+			firesToRemove.forEach(n-> {fires.remove(n); GameEngine.removeElement(n);});
+			firesToRemove.clear();
 
-	private static void initializeFires() {
-		fires=GameEngine.getFires();
-	}
-	
+			firesToAdd.forEach(n -> {fires.add(n); GameEngine.addElement(n);});
+			firesToAdd.clear();
+		}
 
-	private static void organizeFires(){
-		firesToRemove.forEach(n-> {fires.remove(n); GameEngine.removeElement(n);});
-		firesToRemove.clear();
+		private static void removeAllDoused() {
+			if(fires == null) {
+				initializeFires();
+			}
+			fires.forEach(n->{if(n.doused()) GameEngine.removeElement(n);});
+			fires.removeIf(n->n.doused());
+		}
 
-		firesToAdd.forEach(n -> {fires.add(n); GameEngine.addElement(n);});
-		firesToAdd.clear();
+		private static void initializeFires() {
+			fires=GameEngine.getFires();
+		}
 	}
 }

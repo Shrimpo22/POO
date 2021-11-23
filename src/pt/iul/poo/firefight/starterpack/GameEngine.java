@@ -46,7 +46,7 @@ public class GameEngine implements Observer {
 	private static ImageMatrixGUI gui = ImageMatrixGUI.getInstance();  // Referencia para ImageMatrixGUI (janela de interface com o utilizador) 
 
 
-	
+
 	private static List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
 	private Fireman fireman;			// Referencia para o bombeiro
 
@@ -69,11 +69,11 @@ public class GameEngine implements Observer {
 	public void update(Observed source) {
 
 		Debug.line(true);
-		Fire.removeAllDoused();
+		Fire.putOut();
 		fireman.move();
-		Fire.spreadAll();
 		Debug.message("Player Moved", true);
 		tick();
+		Fire.spread();
 
 		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
 
@@ -128,6 +128,10 @@ public class GameEngine implements Observer {
 						elementList.add(fireman = (Fireman)Movable.generate(Object, new Point2D(x,y)));
 					}else {
 						elementList.add(Movable.generate(Object, new Point2D(x,y)));
+						if(Object.equals("Fire")) {
+							Terrain temp = (Terrain) findElement(new Point2D(x,y), 0);
+							temp.ignite();
+						}
 					}
 				}
 				numLine ++;
@@ -190,7 +194,7 @@ public class GameEngine implements Observer {
 	public static ImageMatrixGUI getGUI() {
 		return gui;
 	}
-	
+
 	public static GameElement findElement(Point2D position, int layer) {
 		//		Debug.check("findElement", 1);
 		for(ImageTile ge : elementList) {

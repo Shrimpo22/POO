@@ -6,8 +6,15 @@ public interface Flammable {
 	
 	int getTurnsToBurn();
 	
-	int burnt();
+	boolean burnt();
+	
+	boolean burning();
 	
 	void burn();
 	
+	void ignite();
+	
+	int getImmunity();
+	
+	void douse();
 }

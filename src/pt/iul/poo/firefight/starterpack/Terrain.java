@@ -7,18 +7,19 @@ public abstract class Terrain extends GameElement implements Flammable {
 
 	private int BURN_TURNS = 0;
 	private int turnsToBurn;
-	private int burnt;
+	private boolean burnt;
 	private double probability;
 	private int temporalImmunity = 0;
+	private boolean burning;
 
 
 	public Terrain(Point2D position, int BURN_TURNS, double probability) {
 		this.position = position;
-		this.burnt = 0;
+		this.burnt = false;
 		this.BURN_TURNS = BURN_TURNS;
 		turnsToBurn = BURN_TURNS;
 		this.probability = probability;
-
+		burning = false;
 	}
 
 	public static Terrain generate(char type, Point2D position) {
@@ -38,6 +39,7 @@ public abstract class Terrain extends GameElement implements Flammable {
 		return 0;
 	}
 
+
 	public double getProbability() {
 		return probability;
 	}
@@ -46,29 +48,42 @@ public abstract class Terrain extends GameElement implements Flammable {
 		return turnsToBurn;
 	}
 
-	public int burnt() {
+	public boolean burnt() {
 		return burnt;
 	}
+	
+	public boolean burning() {
+		return burning;
+	}
+	
+	public void burn() {
+		Debug.attribute("Terrain["+ this +"], turns to burn: ", turnsToBurn, 2);
+		if(turnsToBurn > 1)
+			turnsToBurn --;
+		else
+			burnt = true;
+	}
 
-	@Override
-	public void tick() {
-		if(temporalImmunity > 0)
-			temporalImmunity --;
+	public void ignite() {
+		burning = true;
 	}
 	
 	public int getImmunity() {
 		return temporalImmunity;
 	}
 
-	public void burn() {
-		Debug.attribute("Terrain["+ this +"], turns to burn: ", turnsToBurn, 2);
-		if(turnsToBurn > 1)
-			turnsToBurn --;
-		else
-			burnt = 1;
-	}
-
 	public void douse() {
+		burning = false;
 		temporalImmunity = 3;
 	}
+
+
+	@Override
+	public void tick() {
+		if(temporalImmunity > 0)
+			temporalImmunity --;
+		else if(burning)
+			burn();
+	}
+
 }

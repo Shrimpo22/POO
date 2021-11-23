@@ -12,10 +12,10 @@ public class Pine extends Terrain {
 
 	@Override
 	public String getName() {
-		if(burnt() == 0) {
-			return "pine";
-		}else {
+		if(burnt()) {
 			return "burntpine";
+		}else {
+			return "pine";
 		}
 	}
 
