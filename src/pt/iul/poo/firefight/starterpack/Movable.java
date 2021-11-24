@@ -1,5 +1,7 @@
 package pt.iul.poo.firefight.starterpack;
 
+
+import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
 public abstract class Movable extends GameElement{
@@ -13,6 +15,15 @@ public abstract class Movable extends GameElement{
 
 		default: throw new IllegalArgumentException();
 		}
+	}
+	
+	public void move() {
+		
+	}
+		
+	
+	public void move(Direction dir) {
+		
 	}
 	
 }

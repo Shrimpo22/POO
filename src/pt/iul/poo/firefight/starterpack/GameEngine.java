@@ -12,6 +12,7 @@ import pt.iul.ista.poo.gui.ImageTile;
 import pt.iul.ista.poo.observer.Observed;
 import pt.iul.ista.poo.observer.Observer;
 import pt.iul.ista.poo.utils.Point2D;
+import pt.iul.poo.firefight.starterpack.Fire.FireUtils;
 
 // Note que esta classe e' um exemplo - nao pretende ser o inicio do projeto, 
 // embora tambem possa ser usada para isso.
@@ -48,8 +49,8 @@ public class GameEngine implements Observer {
 
 
 	private static List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
-	private Fireman fireman;			// Referencia para o bombeiro
-
+	private static Fireman fireman;			// Referencia para o bombeiro
+	private static GameEngine INSTANCE;
 
 	// Neste exemplo o setup inicial da janela que faz a interface com o utilizador e' feito no construtor 
 	// Tambem poderia ser feito no main - estes passos tem sempre que ser feitos!
@@ -65,15 +66,24 @@ public class GameEngine implements Observer {
 
 	// O metodo update() e' invocado sempre que o utilizador carrega numa tecla
 	// no argumento do metodo e' passada um referencia para o objeto observado (neste caso seria a GUI)
+
+	public static GameEngine getInstance() {
+		if (INSTANCE == null)
+			INSTANCE = new GameEngine();
+		return INSTANCE;
+	}
+
+
 	@Override
 	public void update(Observed source) {
 
 		Debug.line(true);
-		Fire.putOut();
+		removeRubble();
 		fireman.move();
-		Debug.message("Player Moved", true);
 		tick();
-		Fire.spread();
+		Debug.message("Player Moved", true);
+
+		FireUtils.propagate();
 
 		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
 
@@ -128,10 +138,6 @@ public class GameEngine implements Observer {
 						elementList.add(fireman = (Fireman)Movable.generate(Object, new Point2D(x,y)));
 					}else {
 						elementList.add(Movable.generate(Object, new Point2D(x,y)));
-						if(Object.equals("Fire")) {
-							Terrain temp = (Terrain) findElement(new Point2D(x,y), 0);
-							temp.ignite();
-						}
 					}
 				}
 				numLine ++;
@@ -196,7 +202,7 @@ public class GameEngine implements Observer {
 	}
 
 	public static GameElement findElement(Point2D position, int layer) {
-		//		Debug.check("findElement", 1);
+		//				Debug.check("findElement", 1);
 		for(ImageTile ge : elementList) {
 			//			Debug.check("For", 1);
 			if(ge.getLayer() == layer) {
@@ -211,8 +217,14 @@ public class GameEngine implements Observer {
 		return null;
 	}
 
+	private static void removeRubble() {
+		FireUtils.removeAllDoused();
+		fireman.landPlane();
+
+	}
+
 	public static void tick() {
 		for(ImageTile ge : elementList)
-			((GameElement) ge).tick();
+			((GameElement) ge).tick();	
 	}
 }

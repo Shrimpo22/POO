@@ -3,14 +3,13 @@ package pt.iul.poo.firefight.starterpack;
 import debug.Debug;
 import pt.iul.ista.poo.utils.Point2D;
 
-public abstract class Terrain extends GameElement implements Flammable {
+public abstract class Terrain extends GameElement implements Flammable, Tickable {
 
 	private int BURN_TURNS = 0;
 	private int turnsToBurn;
 	private boolean burnt;
 	private double probability;
 	private int temporalImmunity = 0;
-	private boolean burning;
 
 
 	public Terrain(Point2D position, int BURN_TURNS, double probability) {
@@ -19,7 +18,6 @@ public abstract class Terrain extends GameElement implements Flammable {
 		this.BURN_TURNS = BURN_TURNS;
 		turnsToBurn = BURN_TURNS;
 		this.probability = probability;
-		burning = false;
 	}
 
 	public static Terrain generate(char type, Point2D position) {
@@ -51,29 +49,20 @@ public abstract class Terrain extends GameElement implements Flammable {
 	public boolean burnt() {
 		return burnt;
 	}
-	
-	public boolean burning() {
-		return burning;
-	}
-	
+
 	public void burn() {
 		Debug.attribute("Terrain["+ this +"], turns to burn: ", turnsToBurn, 2);
 		if(turnsToBurn > 1)
 			turnsToBurn --;
-		else
-			burnt = true;
+//		else
+//			burnt = true;
 	}
 
-	public void ignite() {
-		burning = true;
-	}
-	
 	public int getImmunity() {
 		return temporalImmunity;
 	}
 
 	public void douse() {
-		burning = false;
 		temporalImmunity = 3;
 	}
 
@@ -82,8 +71,6 @@ public abstract class Terrain extends GameElement implements Flammable {
 	public void tick() {
 		if(temporalImmunity > 0)
 			temporalImmunity --;
-		else if(burning)
-			burn();
 	}
 
 }

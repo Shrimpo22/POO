@@ -2,7 +2,7 @@ package pt.iul.poo.firefight.starterpack;
 import pt.iul.ista.poo.gui.ImageTile;
 import pt.iul.ista.poo.utils.Point2D;
 
-public abstract class GameElement implements ImageTile{
+public abstract class GameElement implements ImageTile, Tickable{
 	Point2D position;
 	
 	public String getName() {

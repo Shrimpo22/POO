@@ -50,14 +50,6 @@ public class Fire extends Movable {
 		return doused;
 	}
 
-	public static void spread() {
-		Spread.propagate();
-	}
-
-	public static void putOut() {
-		Spread.removeAllDoused();
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 
@@ -76,18 +68,19 @@ public class Fire extends Movable {
 
 
 
-	private static class Spread {
+	public static class FireUtils {
 		private static List<Fire> fires;
 		private static List<Fire> firesToRemove = new ArrayList<>();
 		private static List<Fire> firesToAdd = new ArrayList<>();
 
-		private static void propagate() {
-			fires.forEach(n->{Debug.attribute(n, 4); Spread.spread(n);});
+		public static void propagate() {
+			fires.forEach(n->{Debug.attribute(n, 4); FireUtils.spread(n);});
 			organizeFires();
 		}
 
 		private static void spread(Fire fire) {
 			Flammable temp = (Flammable)GameEngine.findElement(fire.getPosition(), 0);
+			temp.burn();
 			if(temp.burnt()) {
 				firesToRemove.add(fire);
 				GameEngine.removeElement(fire);
@@ -106,7 +99,6 @@ public class Fire extends Movable {
 							if(fires.contains(propagate) || firesToRemove.contains(propagate) || firesToAdd.contains(propagate)) {	
 								continue;
 							}
-							neighbour.ignite();
 							firesToAdd.add(propagate);
 						}
 					}
@@ -121,7 +113,7 @@ public class Fire extends Movable {
 			firesToAdd.clear();
 		}
 
-		private static void removeAllDoused() {
+		public static void removeAllDoused() {
 			if(fires == null) {
 				initializeFires();
 			}
@@ -132,5 +124,37 @@ public class Fire extends Movable {
 		private static void initializeFires() {
 			fires=GameEngine.getFires();
 		}
+
+		public static void PutOut(Point2D first, Point2D second) {
+			fires.forEach(n->{if(n.getPosition().equals(first) || n.getPosition().equals(second)) {Debug.check("OK", 1); GameEngine.removeElement(n);}});
+			fires.removeIf(n->n.getPosition().equals(first) || n.getPosition().equals(second));
+		}
+
+		public static int getCollumn() {
+			int mostFiresCollumn = 0;
+			int maxFiresCollumn = 0;
+			for(int x = 0; x<GameEngine.GRID_WIDTH; x++) {
+				Debug.message("Collumn "+x, 1);
+				int currentCollumnCount = 0;
+				for(int y = 0; y<GameEngine.GRID_HEIGHT; y++) {
+					Fire fire = (Fire) GameEngine.findElement(new Point2D(x,y), 1);
+					if( fire != null && !fire.doused) {
+						currentCollumnCount ++;
+						Debug.line2(1);
+						Debug.attribute(fire, 1);
+					}
+					//					Debug.line2(1);
+				}
+				if(currentCollumnCount >= maxFiresCollumn) {
+					mostFiresCollumn = x;
+					maxFiresCollumn = currentCollumnCount;
+				}
+			}		
+			return mostFiresCollumn;
+		}
+
+
+
+
 	}
 }

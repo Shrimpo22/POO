@@ -1,16 +1,21 @@
 package pt.iul.poo.firefight.starterpack;
 
+import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
+import pt.iul.ista.poo.utils.Vector2D;
 
 public class Bulldozer extends Movable {
 
+	private String name;
+
 	public Bulldozer(Point2D position) {
 		this.position = position;
+		name="bulldozer_down";
 	}
-	
+
 	@Override
 	public String getName() {
-		return "bulldozer_down";
+		return name;
 	}
 
 	@Override
@@ -20,6 +25,25 @@ public class Bulldozer extends Movable {
 
 	@Override
 	public int getLayer() {
-		return 1;
+		return 2;
 	}
+
+	@Override
+	public void move(Direction dir) {
+		switch(dir) {
+		case UP : name = "bulldozer_up"; break;
+		case DOWN : name = "bulldozer_down"; break;
+		case LEFT : name = "bulldozer_left"; break;
+		case RIGHT : name = "bulldozer_right"; break;
+
+		default: throw new IllegalArgumentException();
+		}
+		position = GameEngine.clamp(position.plus(dir.asVector()));
+		Terrain terrain = (Terrain) GameEngine.findElement(position, 0);
+
+		GameEngine.removeElement(terrain);
+		terrain = new Land(position);
+		GameEngine.addElement(terrain);
+	}
+
 }
