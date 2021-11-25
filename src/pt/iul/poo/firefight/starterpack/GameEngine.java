@@ -32,7 +32,7 @@ import pt.iul.poo.firefight.starterpack.Fire.FireUtils;
 
 public class GameEngine implements Observer {
 
-	private static int turn = 0;
+	private int turn = 0;
 
 	// Dimensoes da grelha de jogo
 	public static final int GRID_HEIGHT = 10;
@@ -48,8 +48,8 @@ public class GameEngine implements Observer {
 
 
 
-	private static List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
-	private static Fireman fireman;			// Referencia para o bombeiro
+	private List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
+	private Fireman fireman;			// Referencia para o bombeiro
 	private static GameEngine INSTANCE;
 
 	// Neste exemplo o setup inicial da janela que faz a interface com o utilizador e' feito no construtor 
@@ -145,7 +145,7 @@ public class GameEngine implements Observer {
 			lvl.close();
 
 		}catch(FileNotFoundException e) {
-			System.out.println("Ficheiro nï¿½o encontrado");
+			System.out.println("Ficheiro não encontrado");
 
 		}
 	}
@@ -173,7 +173,7 @@ public class GameEngine implements Observer {
 		return result;
 	}
 
-	public static List<Fire> getFires(){
+	public List<Fire> getFires(){
 		List<Fire> fires = new ArrayList<>();
 		for(ImageTile ge: elementList)
 			if(ge instanceof Fire) {
@@ -183,16 +183,16 @@ public class GameEngine implements Observer {
 		return fires;
 	}
 
-	public static int getTurn() {
+	public int getTurn() {
 		return turn;
 	}
 
-	public static void addElement(GameElement object) {
+	public void addElement(GameElement object) {
 		elementList.add(object);
 		gui.addImage(object);
 	}
 
-	public static void removeElement(GameElement object) {
+	public void removeElement(GameElement object) {
 		elementList.remove(object);
 		gui.removeImage(object);
 	}
@@ -201,7 +201,7 @@ public class GameEngine implements Observer {
 		return gui;
 	}
 
-	public static GameElement findElement(Point2D position, int layer) {
+	public GameElement findElement(Point2D position, int layer) {
 		//				Debug.check("findElement", 1);
 		for(ImageTile ge : elementList) {
 			//			Debug.check("For", 1);
@@ -217,13 +217,13 @@ public class GameEngine implements Observer {
 		return null;
 	}
 
-	private static void removeRubble() {
+	private void removeRubble() {
 		FireUtils.removeAllDoused();
 		fireman.landPlane();
 
 	}
 
-	public static void tick() {
+	public void tick() {
 		for(ImageTile ge : elementList)
 			((GameElement) ge).tick();	
 	}

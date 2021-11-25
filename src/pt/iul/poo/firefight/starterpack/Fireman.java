@@ -47,14 +47,13 @@ public class Fireman extends Movable{
 		}else if(Direction.isDirection(key)) {
 			Direction dir = Direction.directionFor(key);
 
-			Fire fire = (Fire) GameEngine.findElement(position.plus(dir.asVector()), 1);
-			Bulldozer temp = (Bulldozer) GameEngine.findElement(position.plus(dir.asVector()), 2);
+			Fire fire = (Fire) game.findElement(position.plus(dir.asVector()), 1);
+			Bulldozer temp = (Bulldozer) game.findElement(position.plus(dir.asVector()), 2);
 
 			if(fire != null) {
 				if(!inBulldozer) {
-					Terrain terrain = (Terrain) GameEngine.findElement(position.plus(dir.asVector()), 0);
+//					Terrain terrain = (Terrain) game.findElement(position.plus(dir.asVector()), 0);
 					fire.douse(dir);
-					terrain.douse();
 				}
 			}else {
 				if(temp != null) {
@@ -77,13 +76,13 @@ public class Fireman extends Movable{
 
 	private void callPlane() {
 		plane = new Plane(FireUtils.getCollumn());
-		GameEngine.addElement(plane);
+		game.addElement(plane);
 	}
 
 	public void landPlane() {
 		if(planeActivated)
 			if(plane.scrap()) {
-				GameEngine.removeElement(plane);
+				game.removeElement(plane);
 				planeActivated = false;
 			}
 

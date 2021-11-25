@@ -1,11 +1,13 @@
 package pt.iul.poo.firefight.starterpack;
 
+import java.util.UUID;
+
 import debug.Debug;
 import pt.iul.ista.poo.utils.Point2D;
 
 public abstract class Terrain extends GameElement implements Flammable, Tickable {
 
-	private int BURN_TURNS = 0;
+//	private int BURN_TURNS = 0;
 	private int turnsToBurn;
 	private boolean burnt;
 	private double probability;
@@ -15,7 +17,7 @@ public abstract class Terrain extends GameElement implements Flammable, Tickable
 	public Terrain(Point2D position, int BURN_TURNS, double probability) {
 		this.position = position;
 		this.burnt = false;
-		this.BURN_TURNS = BURN_TURNS;
+//		this.BURN_TURNS = BURN_TURNS;
 		turnsToBurn = BURN_TURNS;
 		this.probability = probability;
 	}
@@ -31,7 +33,8 @@ public abstract class Terrain extends GameElement implements Flammable, Tickable
 		default: throw new IllegalArgumentException();
 		}
 	}
-
+	
+	
 	@Override
 	public int getLayer() {
 		return 0;
@@ -54,8 +57,8 @@ public abstract class Terrain extends GameElement implements Flammable, Tickable
 		Debug.attribute("Terrain["+ this +"], turns to burn: ", turnsToBurn, 2);
 		if(turnsToBurn > 1)
 			turnsToBurn --;
-//		else
-//			burnt = true;
+		else
+			burnt = true;
 	}
 
 	public int getImmunity() {
@@ -63,7 +66,7 @@ public abstract class Terrain extends GameElement implements Flammable, Tickable
 	}
 
 	public void douse() {
-		temporalImmunity = 3;
+		temporalImmunity = 5;
 	}
 
 

@@ -4,6 +4,7 @@ import pt.iul.ista.poo.utils.Point2D;
 
 public abstract class GameElement implements ImageTile, Tickable{
 	Point2D position;
+	static final GameEngine game = GameEngine.getInstance();
 	
 	public String getName() {
 		return null;

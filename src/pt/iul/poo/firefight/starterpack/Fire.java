@@ -3,6 +3,7 @@ package pt.iul.poo.firefight.starterpack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import debug.Debug;
 import pt.iul.ista.poo.utils.Direction;
@@ -16,10 +17,12 @@ public class Fire extends Movable {
 
 	private boolean doused;
 	private String name = "fire";
-
+	private final Terrain terrain;
+	
 	public Fire(Point2D position) {
 		this.position = position;
 		this.doused = false;
+		terrain = ((Terrain) game.findElement(position, 0));
 	}
 
 	@Override
@@ -42,7 +45,6 @@ public class Fire extends Movable {
 		default: throw new IllegalArgumentException();
 		}
 		doused = true;
-		Terrain terrain = (Terrain) GameEngine.findElement(position, 0);
 		terrain.douse();
 	}
 
@@ -79,37 +81,38 @@ public class Fire extends Movable {
 		}
 
 		private static void spread(Fire fire) {
-			Flammable temp = (Flammable)GameEngine.findElement(fire.getPosition(), 0);
-			temp.burn();
-			if(temp.burnt()) {
+			
+			fire.terrain.burn();
+			if(fire.terrain.burnt()) {
 				firesToRemove.add(fire);
-				GameEngine.removeElement(fire);
+				game.removeElement(fire);
 			}else
-				if(GameEngine.getTurn() > 2){
+				if(game.getTurn() > 2){
 					List<Point2D> neighbours = fire.getPosition().getNeighbourhoodPoints();
 					for(Point2D position : neighbours) {
 						position = GameEngine.clamp(position);
-						if(GameEngine.findElement(position, 3) != null) {
+						if(game.findElement(position, 3) != null) {
 							continue;
 						}
-						Flammable neighbour = (Flammable)GameEngine.findElement(position, 0);
+//						Flammable neighbour = (Flammable)game.findElement(position, 0);
+						Fire toAdd = new Fire(position);
 						Random random = new Random();
-						if(!neighbour.burnt() && neighbour.getImmunity() == 0 && random.nextInt(20) < neighbour.getProbability()*20) {
-							Fire propagate = new Fire(position);
-							if(fires.contains(propagate) || firesToRemove.contains(propagate) || firesToAdd.contains(propagate)) {	
+						if(!toAdd.terrain.burnt() && toAdd.terrain.getImmunity() == 0 && random.nextInt(20) < toAdd.terrain.getProbability()*20) {
+//							Fire propagate = new Fire(position);
+							if(fires.contains(toAdd) || firesToRemove.contains(toAdd) || firesToAdd.contains(toAdd)) {	
 								continue;
 							}
-							firesToAdd.add(propagate);
+							firesToAdd.add(toAdd);
 						}
 					}
 				}
 		}
 
 		private static void organizeFires() {
-			firesToRemove.forEach(n-> {fires.remove(n); GameEngine.removeElement(n);});
+			firesToRemove.forEach(n-> {fires.remove(n); game.removeElement(n);});
 			firesToRemove.clear();
 
-			firesToAdd.forEach(n -> {fires.add(n); GameEngine.addElement(n);});
+			firesToAdd.forEach(n -> {fires.add(n); game.addElement(n);});
 			firesToAdd.clear();
 		}
 
@@ -117,16 +120,16 @@ public class Fire extends Movable {
 			if(fires == null) {
 				initializeFires();
 			}
-			fires.forEach(n->{if(n.doused()) GameEngine.removeElement(n);});
+			fires.forEach(n->{if(n.doused()) game.removeElement(n);});
 			fires.removeIf(n->n.doused());
 		}
 
 		private static void initializeFires() {
-			fires=GameEngine.getFires();
+			fires=game.getFires();
 		}
 
 		public static void PutOut(Point2D first, Point2D second) {
-			fires.forEach(n->{if(n.getPosition().equals(first) || n.getPosition().equals(second)) {Debug.check("OK", 1); GameEngine.removeElement(n);}});
+			fires.forEach(n->{if(n.getPosition().equals(first) || n.getPosition().equals(second)) {Debug.check("OK", 1); game.removeElement(n);}});
 			fires.removeIf(n->n.getPosition().equals(first) || n.getPosition().equals(second));
 		}
 
@@ -137,7 +140,7 @@ public class Fire extends Movable {
 				Debug.message("Collumn "+x, 1);
 				int currentCollumnCount = 0;
 				for(int y = 0; y<GameEngine.GRID_HEIGHT; y++) {
-					Fire fire = (Fire) GameEngine.findElement(new Point2D(x,y), 1);
+					Fire fire = (Fire) game.findElement(new Point2D(x,y), 1);
 					if( fire != null && !fire.doused) {
 						currentCollumnCount ++;
 						Debug.line2(1);

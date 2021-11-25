@@ -31,12 +31,12 @@ public class Plane extends GameElement implements Tickable{
 		Debug.attribute("DownTile: ", downTile, 1);
 		Debug.attribute("Down2Tile: ", down2Tile, 1);
 		if(GameEngine.getGUI().isWithinBounds(downTile)) {
-			Fire fire1 = (Fire) GameEngine.findElement(downTile, 1);
+			Fire fire1 = (Fire) game.findElement(downTile, 1);
 			if(fire1 != null)
 				fire1.douse(Direction.DOWN);
 		}
 		if(GameEngine.getGUI().isWithinBounds(down2Tile)) {
-			Fire fire2 = (Fire) GameEngine.findElement(down2Tile, 1);
+			Fire fire2 = (Fire) game.findElement(down2Tile, 1);
 			if(fire2 != null)
 				fire2.douse(Direction.DOWN);
 		}

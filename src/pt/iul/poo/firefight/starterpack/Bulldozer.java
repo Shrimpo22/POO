@@ -2,7 +2,6 @@ package pt.iul.poo.firefight.starterpack;
 
 import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
-import pt.iul.ista.poo.utils.Vector2D;
 
 public class Bulldozer extends Movable {
 
@@ -39,11 +38,11 @@ public class Bulldozer extends Movable {
 		default: throw new IllegalArgumentException();
 		}
 		position = GameEngine.clamp(position.plus(dir.asVector()));
-		Terrain terrain = (Terrain) GameEngine.findElement(position, 0);
+		Terrain terrain = (Terrain) game.findElement(position, 0);
 
-		GameEngine.removeElement(terrain);
+		game.removeElement(terrain);
 		terrain = new Land(position);
-		GameEngine.addElement(terrain);
+		game.addElement(terrain);
 	}
 
 }
