@@ -7,11 +7,12 @@ public class Undergrowth extends Terrain{
 	private static final double PROBABILITY = 1;
 
 	public Undergrowth(Point2D position) {
-		super(position, BURN_TURNS, PROBABILITY);
+		super(position,"grass", 0, BURN_TURNS, PROBABILITY);
 	}
 
 	@Override
 	public String getName() {
+		
 		if(burnt()) {
 			return "burnt";
 

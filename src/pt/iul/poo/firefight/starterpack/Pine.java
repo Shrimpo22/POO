@@ -7,7 +7,7 @@ public class Pine extends Terrain {
 	private static final double PROBABILITY = 1;
 
 	public Pine(Point2D position) {
-		super(position, BURN_TURNS, PROBABILITY);
+		super(position, "pine", 0, BURN_TURNS, PROBABILITY);
 	}
 
 	@Override

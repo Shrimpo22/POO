@@ -13,6 +13,8 @@ public class Launcher {
 //		Debug.on(2);
 //		Debug.on(3);
 //		Debug.on(4);
+		
+		
 		// Cria uma instancia de GameEngine e depois inicia o jogo
 		// Podera' vir a ficar diferente caso defina GameEngine como solitao 
 		ImageMatrixGUI gui = ImageMatrixGUI.getInstance();

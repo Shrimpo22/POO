@@ -3,28 +3,10 @@ package pt.iul.poo.firefight.starterpack;
 import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
-public class Bulldozer extends Movable {
-
-	private String name;
-
+public class Bulldozer extends Mobile {
+	
 	public Bulldozer(Point2D position) {
-		this.position = position;
-		name="bulldozer_down";
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public Point2D getPosition() {
-		return position;
-	}
-
-	@Override
-	public int getLayer() {
-		return 2;
+		super(position, "bulldozer_down", 2);
 	}
 
 	@Override

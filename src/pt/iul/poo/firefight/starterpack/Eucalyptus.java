@@ -7,7 +7,7 @@ public class Eucalyptus extends Terrain {
 	private static final double PROBABILITY = 1;
 
 	public Eucalyptus(Point2D position) {
-		super(position, BURN_TURNS, PROBABILITY);
+		super(position, "eucaliptus", 0, BURN_TURNS, PROBABILITY);
 	}
 	
 	@Override

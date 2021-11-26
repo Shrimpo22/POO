@@ -4,9 +4,13 @@ package pt.iul.poo.firefight.starterpack;
 import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
-public abstract class Movable extends GameElement{
+public abstract class Mobile extends GameElement implements Move{
 	
-	public static Movable generate(String type, Point2D position) {
+	public Mobile(Point2D position, String name, int layer) {
+		super(position, name, layer);
+	}
+	
+	public static Mobile generate(String type, Point2D position) {
 
 		switch(type) {
 		case "Fireman" : return new Fireman(position);

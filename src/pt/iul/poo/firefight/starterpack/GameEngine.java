@@ -6,13 +6,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 import pt.iul.ista.poo.gui.ImageMatrixGUI;
 import pt.iul.ista.poo.gui.ImageTile;
 import pt.iul.ista.poo.observer.Observed;
 import pt.iul.ista.poo.observer.Observer;
 import pt.iul.ista.poo.utils.Point2D;
-import pt.iul.poo.firefight.starterpack.Fire.FireUtils;
 
 // Note que esta classe e' um exemplo - nao pretende ser o inicio do projeto, 
 // embora tambem possa ser usada para isso.
@@ -73,7 +73,6 @@ public class GameEngine implements Observer {
 		return INSTANCE;
 	}
 
-
 	@Override
 	public void update(Observed source) {
 
@@ -82,8 +81,7 @@ public class GameEngine implements Observer {
 		fireman.move();
 		tick();
 		Debug.message("Player Moved", true);
-
-		FireUtils.propagate();
+		Fire.propagate();
 
 		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
 
@@ -93,24 +91,16 @@ public class GameEngine implements Observer {
 		// redesenha as imagens na GUI, tendo em conta as novas posicoes
 	}
 
-
-	// Criacao dos objetos e envio das imagens para GUI
 	public void start() {
 		//		createTerrain();      // criar mapa do terreno
 		//		createMoreStuff();    // criar mais objetos (bombeiro, fogo,...)
 		sendImagesToGUI();    // enviar as imagens para a GUI
-		getFires();
+		//		getFires();
 	}
 
-
-
-	// Envio das mensagens para a GUI - note que isto so' precisa de ser feito no inicio
-	// Nao e' suposto re-enviar os objetos se a unica coisa que muda sao as posicoes  
 	private void sendImagesToGUI() {
 		gui.addImages(elementList);
 	}
-
-	// M�todo para ler um n�vel
 
 	public void readLevel(String file){
 		try {
@@ -135,9 +125,9 @@ public class GameEngine implements Observer {
 					int y = lvl.nextInt();
 
 					if(Object.equals("Fireman")){
-						elementList.add(fireman = (Fireman)Movable.generate(Object, new Point2D(x,y)));
+						elementList.add(fireman = (Fireman)Mobile.generate(Object, new Point2D(x,y)));
 					}else {
-						elementList.add(Movable.generate(Object, new Point2D(x,y)));
+						elementList.add(Mobile.generate(Object, new Point2D(x,y)));
 					}
 				}
 				numLine ++;
@@ -149,8 +139,6 @@ public class GameEngine implements Observer {
 
 		}
 	}
-
-	// M�todo para os objetos n�o sa�rem da janela
 
 	public static Point2D clamp(Point2D p) {
 
@@ -173,14 +161,14 @@ public class GameEngine implements Observer {
 		return result;
 	}
 
-	public List<Fire> getFires(){
-		List<Fire> fires = new ArrayList<>();
-		for(ImageTile ge: elementList)
-			if(ge instanceof Fire) {
-				fires.add((Fire)ge);
-				Debug.attribute("FiresList", ge, false);
-			}
-		return fires;
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getElements(Predicate<GameElement> pred){
+		List<T> elements = new ArrayList<>();
+		for(ImageTile ge: elementList) {
+			if(pred.test((GameElement) ge)) 
+				elements.add((T) ge);
+		}
+		return elements;
 	}
 
 	public int getTurn() {
@@ -195,6 +183,11 @@ public class GameEngine implements Observer {
 	public void removeElement(GameElement object) {
 		elementList.remove(object);
 		gui.removeImage(object);
+	}
+
+	public <T> void removeElements(List<T> toRemove) {
+		elementList.removeAll(toRemove);
+		toRemove.forEach(o-> gui.removeImage((ImageTile)o));
 	}
 
 	public static ImageMatrixGUI getGUI() {
@@ -218,13 +211,17 @@ public class GameEngine implements Observer {
 	}
 
 	private void removeRubble() {
-		FireUtils.removeAllDoused();
-		fireman.landPlane();
-
+		removeElements(getElements(o -> o instanceof Fire && ((Fire) o).doused()));
+		removeElements(getElements(o -> o instanceof Plane && ((Plane) o).scrap()));
 	}
 
 	public void tick() {
 		for(ImageTile ge : elementList)
 			((GameElement) ge).tick();	
 	}
+
+	public Fireman getFireman() {
+		return fireman;
+	}
+
 }

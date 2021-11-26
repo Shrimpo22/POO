@@ -6,11 +6,11 @@ public interface Flammable {
 	
 	int getTurnsToBurn();
 	
+	int getImmunity();
+	
 	boolean burnt();	
 	
 	void burn();
-	
-	int getImmunity();
 	
 	void douse();
 }

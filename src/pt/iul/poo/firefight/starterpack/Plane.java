@@ -4,22 +4,14 @@ import debug.Debug;
 import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
-public class Plane extends GameElement implements Tickable{
+public class Plane extends Mobile {
 	private boolean scrap;
-	
+
 	Plane(int collumn){
-		this.position = new Point2D(collumn, 11);
+		super(new Point2D(collumn, 11), "plane", 4);
 		scrap = false;
 	}
 
-	public String getName() {
-		return "plane";
-	}
-
-	public int getLayer() {
-		return 4;
-	}
-	
 	public boolean scrap() {
 		return scrap;
 	}
@@ -55,4 +47,5 @@ public class Plane extends GameElement implements Tickable{
 	public void tick() {
 		move();
 	}
+
 }

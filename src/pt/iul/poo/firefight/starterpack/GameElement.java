@@ -3,11 +3,22 @@ import pt.iul.ista.poo.gui.ImageTile;
 import pt.iul.ista.poo.utils.Point2D;
 
 public abstract class GameElement implements ImageTile, Tickable{
-	Point2D position;
+	protected String name;
+	protected Point2D position;
+	protected int layer;
+	
 	static final GameEngine game = GameEngine.getInstance();
 	
+	
+	
+	public GameElement(Point2D position, String name, int layer) {
+		this.position = position;
+		this.name = name;
+		this.layer = layer;
+	}
+	
 	public String getName() {
-		return null;
+		return name;
 	}
 
 	public Point2D getPosition() {
@@ -15,7 +26,7 @@ public abstract class GameElement implements ImageTile, Tickable{
 	}
 	
 	public int getLayer() {
-		return 0;
+		return layer;
 	}
 
 	public void tick() {
@@ -27,5 +38,4 @@ public abstract class GameElement implements ImageTile, Tickable{
 		return "GameElement ["+getName()+"] | Position: ("+getPosition().getX()+","+getPosition().getY()+") | Layer:"+getLayer();
 	}
 	
-
 }
