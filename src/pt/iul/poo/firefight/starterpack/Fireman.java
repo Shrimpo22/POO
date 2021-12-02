@@ -10,24 +10,29 @@ import java.awt.event.KeyEvent;
 // Tem atributos e metodos repetidos em relacao ao que est� definido noutras classes 
 // Isso sera' de evitar na versao a serio do projeto
 
-public class Fireman extends Mobile{
+public class Fireman extends Mobile implements Rewardable{
 
+	private int reward;
 	private boolean inBulldozer;
 	private Bulldozer bulldozer;
 	private boolean planeActivated;
 	private Plane plane;
+	
+	
+	private int douseCounter = 0;
+	private int planesCounter = 0;
 
 	public Fireman(Point2D position) {
 		super(position, "fireman", 3);
 		this.inBulldozer=false;
 		this.planeActivated = false;
+		this.reward = 0;
 	}
 
 	// Move numa direcao aleatoria 
 	@Override
 	public void move() {
 		int key = ImageMatrixGUI.getInstance().keyPressed();
-		if(key==KeyEvent.VK_ESCAPE)System.exit(1);
 		if(key == KeyEvent.VK_ENTER) {
 			if(inBulldozer) {
 				inBulldozer = false;
@@ -38,17 +43,20 @@ public class Fireman extends Mobile{
 			if(!planeActivated) {
 				callPlane();
 				planeActivated = true;
+				planesCounter ++;
 			}
 		}else if(Direction.isDirection(key)) {
 			Direction dir = Direction.directionFor(key);
 
-			Fire fire = (Fire) game.findElement(position.plus(dir.asVector()), 1);
-			Bulldozer temp = (Bulldozer) game.findElement(position.plus(dir.asVector()), 2);
+			Fire fire = (Fire) game.findElement(position.plus(dir.asVector()), o->o instanceof Fire);
+			Bulldozer temp = (Bulldozer) game.findElement(position.plus(dir.asVector()), o->o instanceof Bulldozer);
 
 			if(fire != null) {
 				if(!inBulldozer) {
 //					Terrain terrain = (Terrain) game.findElement(position.plus(dir.asVector()), 0);
 					fire.douse(dir);
+					douseCounter ++;
+					reward += 50;
 				}
 			}else {
 				if(temp != null) {
@@ -61,6 +69,7 @@ public class Fireman extends Mobile{
 				}else{
 					if(inBulldozer){
 						bulldozer.move(dir);
+						reward -= 25;
 					}
 					position = GameEngine.clamp(position.plus(dir.asVector()));
 				}
@@ -69,11 +78,26 @@ public class Fireman extends Mobile{
 	}
 
 	private void callPlane() {
-		plane = new Plane(Fire.getCollumn());
+		plane = new Plane(Fire.getCollumn(), this);
 		game.addElement(plane);
 	}
 
 	public void setPosition(Point2D position) {
 		this.position = position;
 	}
+	
+	public void calculateReward(int number) {
+		reward += number;
+	}
+
+	public int reward() {
+		return reward;
+	}
+
+	public int[] getStats() {
+		int[] stats = {douseCounter, Bulldozer.getDemolishes(), planesCounter, Plane.getDouses()};
+		return stats;
+	}
+
+
 }

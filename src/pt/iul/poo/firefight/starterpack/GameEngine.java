@@ -1,6 +1,8 @@
 package pt.iul.poo.firefight.starterpack;
 
 import debug.Debug;
+
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -33,6 +35,9 @@ import pt.iul.ista.poo.utils.Point2D;
 public class GameEngine implements Observer {
 
 	private int turn = 0;
+	private int LevelPoints;
+	private int PersonalPoints;
+	private int TreesLeft = 0;
 
 	// Dimensoes da grelha de jogo
 	public static final int GRID_HEIGHT = 10;
@@ -52,21 +57,6 @@ public class GameEngine implements Observer {
 	private Fireman fireman;			// Referencia para o bombeiro
 	private static GameEngine INSTANCE;
 
-	// Neste exemplo o setup inicial da janela que faz a interface com o utilizador e' feito no construtor 
-	// Tambem poderia ser feito no main - estes passos tem sempre que ser feitos!
-	//	public void start() {
-	//		 
-	//		gui = ImageMatrixGUI.getInstance();    // 1. obter instancia ativa de ImageMatrixGUI	
-	//		gui.setSize(GRID_HEIGHT, GRID_WIDTH);  // 2. configurar as dimensoes 
-	//		gui.registerObserver(this);            // 3. registar o objeto ativo GameEngine como observador da GUI
-	//		gui.go();                              // 4. lancar a GUI
-	//		
-	//		tileList = new ArrayList<>();   
-	//	}
-
-	// O metodo update() e' invocado sempre que o utilizador carrega numa tecla
-	// no argumento do metodo e' passada um referencia para o objeto observado (neste caso seria a GUI)
-
 	public static GameEngine getInstance() {
 		if (INSTANCE == null)
 			INSTANCE = new GameEngine();
@@ -75,6 +65,11 @@ public class GameEngine implements Observer {
 
 	@Override
 	public void update(Observed source) {
+		int key = ImageMatrixGUI.getInstance().keyPressed();
+		if(key==KeyEvent.VK_ESCAPE)System.exit(1);
+		if(key==KeyEvent.VK_J)
+			Debug.on(-1);
+		Debug.carryOut(() -> {getElements(o->o instanceof Fire).forEach(o->removeElement((Fire)o));}, -1);
 
 		Debug.line(true);
 		removeRubble();
@@ -82,7 +77,7 @@ public class GameEngine implements Observer {
 		tick();
 		Debug.message("Player Moved", true);
 		Fire.propagate();
-
+		gameOver();
 		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
 
 		gui.update();  
@@ -100,6 +95,30 @@ public class GameEngine implements Observer {
 
 	private void sendImagesToGUI() {
 		gui.addImages(elementList);
+	}
+
+	private void gameOver() {
+		if(getElements(o->o instanceof Fire).isEmpty()) {
+			
+			List<Terrain> terrains_left = getElements(o->o instanceof Terrain && !((Terrain) o).burnt() && !(((Terrain) o) instanceof Land));
+			terrains_left.forEach(o->{LevelPoints += o.reward(); TreesLeft ++;});
+			Debug.attribute("Level Points: ", LevelPoints, true);
+			PersonalPoints = fireman.reward();
+			Debug.attribute("Personal Points", PersonalPoints, true);
+			Debug.attribute("Total Points", PersonalPoints + LevelPoints, true);
+			getStats();
+		}
+
+
+	}
+
+	private void getStats() {
+		int[] stats = fireman.getStats();
+		System.out.println("You've put out: "+ stats[0] + " fires!		Score:"+stats[0]*50);
+		System.out.println("You've demolished: "+ stats[1] + " tiles of land!		Score:"+stats[1]*-25);
+		System.out.println("You've called: "+ stats[2] + " planes!");
+		System.out.println("Your planes have doused a total of: "+ stats[3] + " fires!		Score:"+stats[3]*50);
+		System.out.println("A total of: "+ TreesLeft + " trees survived!		Score:"+LevelPoints);
 	}
 
 	public void readLevel(String file){
@@ -132,6 +151,7 @@ public class GameEngine implements Observer {
 				}
 				numLine ++;
 			}
+			LevelPoints = 0;
 			lvl.close();
 
 		}catch(FileNotFoundException e) {
@@ -194,15 +214,10 @@ public class GameEngine implements Observer {
 		return gui;
 	}
 
-	public GameElement findElement(Point2D position, int layer) {
-		//				Debug.check("findElement", 1);
+	public GameElement findElement(Point2D position, Predicate<GameElement> pred) {
 		for(ImageTile ge : elementList) {
-			//			Debug.check("For", 1);
-			if(ge.getLayer() == layer) {
-				//				Debug.check("Flammable", 1);
-				//				Debug.equals(ge.getPosition(), position, 1);
+			if(pred.test((GameElement)ge)) {
 				if(ge.getPosition().equals(position)) {
-					//					Debug.attribute("Element found", ge, 1);
 					return (GameElement) ge;
 				}
 			}
@@ -222,6 +237,10 @@ public class GameEngine implements Observer {
 
 	public Fireman getFireman() {
 		return fireman;
+	}
+	
+	public void setFireman(Fireman fireman) {
+		this.fireman = fireman;
 	}
 
 }

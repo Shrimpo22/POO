@@ -4,7 +4,8 @@ import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
 public class Bulldozer extends Mobile {
-	
+	private static int demolishes;
+
 	public Bulldozer(Point2D position) {
 		super(position, "bulldozer_down", 2);
 	}
@@ -20,11 +21,17 @@ public class Bulldozer extends Mobile {
 		default: throw new IllegalArgumentException();
 		}
 		position = GameEngine.clamp(position.plus(dir.asVector()));
-		Terrain terrain = (Terrain) game.findElement(position, 0);
+		Terrain terrain = (Terrain) game.findElement(position, o->o instanceof Terrain);
+		if(!(terrain instanceof Land)) {
+			game.removeElement(terrain);
+			terrain = new Land(position);
+			game.addElement(terrain);
+			demolishes ++;
+		}
+	}
 
-		game.removeElement(terrain);
-		terrain = new Land(position);
-		game.addElement(terrain);
+	public static int getDemolishes() {
+		return demolishes;
 	}
 
 }

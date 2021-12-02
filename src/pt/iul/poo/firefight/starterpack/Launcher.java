@@ -19,11 +19,11 @@ public class Launcher {
 		// Podera' vir a ficar diferente caso defina GameEngine como solitao 
 		ImageMatrixGUI gui = ImageMatrixGUI.getInstance();
 		gui.setSize(10, 10);
-		gui.go();
 		
 		GameEngine game = GameEngine.getInstance();
 		gui.registerObserver(game);
 		game.readLevel("example.txt");
+		gui.go();
 		game.start();
 	}
 }

@@ -19,7 +19,7 @@ public class Fire extends Mobile {
 	public Fire(Point2D position) {
 		super(position, "fire", 1);
 		this.doused = false;
-		terrain = ((Terrain) game.findElement(position, 0));
+		terrain = ((Terrain) game.findElement(position, o->o instanceof Terrain));
 	}
 
 	public void douse(Direction dir) {
@@ -54,7 +54,7 @@ public class Fire extends Mobile {
 		return o.getPosition().equals(this.getPosition());
 
 	}
-
+	
 	private void spread() {
 		if(doused)
 			return;
@@ -73,7 +73,6 @@ public class Fire extends Mobile {
 					Fire toAdd = new Fire(position);
 					Random random = new Random();
 					if(!toAdd.terrain.burnt() && toAdd.terrain.getImmunity() == 0 && random.nextInt(20) < toAdd.terrain.getProbability()*20) {
-						//						Fire propagate = new Fire(position);
 						if(game.getElements(o-> o instanceof Fire).contains(toAdd)) {	
 							continue;
 						}
@@ -88,11 +87,6 @@ public class Fire extends Mobile {
 		fires.forEach(n->{Debug.attribute(n, 4); n.spread();});
 	}
 
-	public static void PutOut(Point2D first, Point2D second) {
-		//			fires.forEach(n->{if(n.getPosition().equals(first) || n.getPosition().equals(second)) {Debug.check("OK", 1); game.removeElement(n);}});
-		//			fires.removeIf(n->n.getPosition().equals(first) || n.getPosition().equals(second));
-	}
-
 	public static int getCollumn() {
 		int mostFiresCollumn = 0;
 		int maxFiresCollumn = 0;
@@ -100,7 +94,7 @@ public class Fire extends Mobile {
 			Debug.message("Collumn "+x, 1);
 			int currentCollumnCount = 0;
 			for(int y = 0; y<GameEngine.GRID_HEIGHT; y++) {
-				Fire fire = (Fire) game.findElement(new Point2D(x,y), 1);
+				Fire fire = (Fire) game.findElement(new Point2D(x,y), o->o instanceof Fire);
 				if( fire != null && !fire.doused) {
 					currentCollumnCount ++;
 					Debug.line2(1);
@@ -116,7 +110,5 @@ public class Fire extends Mobile {
 		Debug.attribute("Collumn with most fires: ",mostFiresCollumn, 1);
 		return mostFiresCollumn;
 	}
-
-
 }
 
