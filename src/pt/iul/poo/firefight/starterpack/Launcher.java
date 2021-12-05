@@ -13,7 +13,7 @@ public class Launcher {
 //		Debug.on(2);
 //		Debug.on(3);
 //		Debug.on(4);
-		
+
 		
 		// Cria uma instancia de GameEngine e depois inicia o jogo
 		// Podera' vir a ficar diferente caso defina GameEngine como solitao 
@@ -22,7 +22,7 @@ public class Launcher {
 		
 		GameEngine game = GameEngine.getInstance();
 		gui.registerObserver(game);
-		game.readLevel("example.txt");
+		game.readLevel("level1.txt");
 		gui.go();
 		game.start();
 	}

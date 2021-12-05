@@ -17,8 +17,8 @@ public class Fireman extends Mobile implements Rewardable{
 	private Bulldozer bulldozer;
 	private boolean planeActivated;
 	private Plane plane;
-	
-	
+
+
 	private int douseCounter = 0;
 	private int planesCounter = 0;
 
@@ -33,6 +33,10 @@ public class Fireman extends Mobile implements Rewardable{
 	@Override
 	public void move() {
 		int key = ImageMatrixGUI.getInstance().keyPressed();
+		if(plane != null && plane.scrap()) {
+			planeActivated = false;
+			plane =null;
+		}
 		if(key == KeyEvent.VK_ENTER) {
 			if(inBulldozer) {
 				inBulldozer = false;
@@ -53,7 +57,7 @@ public class Fireman extends Mobile implements Rewardable{
 
 			if(fire != null) {
 				if(!inBulldozer) {
-//					Terrain terrain = (Terrain) game.findElement(position.plus(dir.asVector()), 0);
+					//					Terrain terrain = (Terrain) game.findElement(position.plus(dir.asVector()), 0);
 					fire.douse(dir);
 					douseCounter ++;
 					reward += 50;
@@ -85,7 +89,7 @@ public class Fireman extends Mobile implements Rewardable{
 	public void setPosition(Point2D position) {
 		this.position = position;
 	}
-	
+
 	public void calculateReward(int number) {
 		reward += number;
 	}

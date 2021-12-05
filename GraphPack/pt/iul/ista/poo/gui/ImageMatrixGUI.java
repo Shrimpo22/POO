@@ -51,8 +51,7 @@ import pt.iul.ista.poo.utils.Point2D;
  */
 
 /**
- * @author lmmn, tgsb
- * @version 07-Nov-2021
+ * @author lmmn
  */
 
 //Changed to local Observer-Observed pattern 27-Set-2018
@@ -64,8 +63,8 @@ public class ImageMatrixGUI extends Observed {
     private final int LABEL_HEIGHT = 20;
     private final int SQUARE_SIZE;
 
-    private int n_squares_width = 5;
-    private int n_squares_height = 5;
+    private  int n_squares_width = 3;
+    private  int n_squares_height = 3;
 
     private JFrame frame;
     private JPanel panel;

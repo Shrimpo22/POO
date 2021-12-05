@@ -5,10 +5,14 @@ import debug.Debug;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Predicate;
+
+import javax.swing.JOptionPane;
 
 import pt.iul.ista.poo.gui.ImageMatrixGUI;
 import pt.iul.ista.poo.gui.ImageTile;
@@ -56,6 +60,8 @@ public class GameEngine implements Observer {
 	private List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
 	private Fireman fireman;			// Referencia para o bombeiro
 	private static GameEngine INSTANCE;
+	private String username; 
+	private int lvl;
 
 	public static GameEngine getInstance() {
 		if (INSTANCE == null)
@@ -65,6 +71,7 @@ public class GameEngine implements Observer {
 
 	@Override
 	public void update(Observed source) {
+
 		int key = ImageMatrixGUI.getInstance().keyPressed();
 		if(key==KeyEvent.VK_ESCAPE)System.exit(1);
 		if(key==KeyEvent.VK_J)
@@ -91,6 +98,7 @@ public class GameEngine implements Observer {
 		//		createMoreStuff();    // criar mais objetos (bombeiro, fogo,...)
 		sendImagesToGUI();    // enviar as imagens para a GUI
 		//		getFires();
+
 	}
 
 	private void sendImagesToGUI() {
@@ -100,6 +108,12 @@ public class GameEngine implements Observer {
 	private void gameOver() {
 		if(getElements(o->o instanceof Fire).isEmpty()) {
 			
+			
+			
+			
+			
+			username = JOptionPane.showInputDialog("Input username");
+			System.out.println(username);
 			List<Terrain> terrains_left = getElements(o->o instanceof Terrain && !((Terrain) o).burnt() && !(((Terrain) o) instanceof Land));
 			terrains_left.forEach(o->{LevelPoints += o.reward(); TreesLeft ++;});
 			Debug.attribute("Level Points: ", LevelPoints, true);
@@ -107,9 +121,12 @@ public class GameEngine implements Observer {
 			Debug.attribute("Personal Points", PersonalPoints, true);
 			Debug.attribute("Total Points", PersonalPoints + LevelPoints, true);
 			getStats();
+			System.out.println("A");
+			Scoreboard level1 = new Scoreboard("level1score.txt");
+			System.out.println("A");
+			level1.writeScore(username+"|"+LevelPoints+"|"+PersonalPoints);
+			System.out.println("A");
 		}
-
-
 	}
 
 	private void getStats() {
@@ -124,6 +141,8 @@ public class GameEngine implements Observer {
 	public void readLevel(String file){
 		try {
 			File level = new File(file);
+			lvl = file.charAt(5)-48;
+			System.out.println(lvl);
 			Scanner lvl = new Scanner(level);
 			int numLine = 0;
 
@@ -238,7 +257,7 @@ public class GameEngine implements Observer {
 	public Fireman getFireman() {
 		return fireman;
 	}
-	
+
 	public void setFireman(Fireman fireman) {
 		this.fireman = fireman;
 	}
