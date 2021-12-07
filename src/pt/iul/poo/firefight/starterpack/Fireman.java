@@ -30,6 +30,7 @@ public class Fireman extends Mobile implements Rewardable{
 	}
 
 	// Move numa direcao aleatoria 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void move() {
 		int key = ImageMatrixGUI.getInstance().keyPressed();
@@ -40,7 +41,7 @@ public class Fireman extends Mobile implements Rewardable{
 		if(key == KeyEvent.VK_ENTER) {
 			if(inBulldozer) {
 				inBulldozer = false;
-				layer=3;
+				setLayer(3);
 				return;
 			}
 		}else if(key == KeyEvent.VK_P) {
@@ -52,8 +53,12 @@ public class Fireman extends Mobile implements Rewardable{
 		}else if(Direction.isDirection(key)) {
 			Direction dir = Direction.directionFor(key);
 
-			Fire fire = (Fire) game.findElement(position.plus(dir.asVector()), o->o instanceof Fire);
-			Bulldozer temp = (Bulldozer) game.findElement(position.plus(dir.asVector()), o->o instanceof Bulldozer);
+			switch(dir) {
+			case LEFT : setName("fireman_left"); break;
+			case RIGHT: setName("fireman_right"); break;
+			}
+			Fire fire = (Fire) game.findElement(getPosition().plus(dir.asVector()), o->o instanceof Fire);
+			Bulldozer temp = (Bulldozer) game.findElement(getPosition().plus(dir.asVector()), o->o instanceof Bulldozer);
 
 			if(fire != null) {
 				if(!inBulldozer) {
@@ -66,16 +71,16 @@ public class Fireman extends Mobile implements Rewardable{
 				if(temp != null) {
 					if(!inBulldozer) {
 						inBulldozer = true;
-						position = GameEngine.clamp(position.plus(dir.asVector()));
-						layer=-1;
+						setPosition(GameEngine.clamp(getPosition().plus(dir.asVector())));
+						setLayer(-1);
 					}
 					bulldozer = temp;
 				}else{
 					if(inBulldozer){
-						bulldozer.move(dir);
+						bulldozer.move();
 						reward -= 25;
 					}
-					position = GameEngine.clamp(position.plus(dir.asVector()));
+					setPosition(GameEngine.clamp(getPosition().plus(dir.asVector())));
 				}
 			}
 		}
@@ -86,9 +91,7 @@ public class Fireman extends Mobile implements Rewardable{
 		game.addElement(plane);
 	}
 
-	public void setPosition(Point2D position) {
-		this.position = position;
-	}
+	
 
 	public void calculateReward(int number) {
 		reward += number;

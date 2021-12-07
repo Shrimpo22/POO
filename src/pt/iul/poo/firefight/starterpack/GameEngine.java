@@ -5,8 +5,6 @@ import debug.Debug;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -72,11 +70,21 @@ public class GameEngine implements Observer {
 	@Override
 	public void update(Observed source) {
 
+		gui.setStatusMessage("Hello");
+
+
 		int key = ImageMatrixGUI.getInstance().keyPressed();
 		if(key==KeyEvent.VK_ESCAPE)System.exit(1);
 		if(key==KeyEvent.VK_J)
 			Debug.on(-1);
 		Debug.carryOut(() -> {getElements(o->o instanceof Fire).forEach(o->removeElement((Fire)o));}, -1);
+		Debug.off(-1);
+		if(key==KeyEvent.VK_F)
+			for(int i = 0; i<GRID_WIDTH; i++) {
+				for( int j=0; j<GRID_HEIGHT; j++){
+					addElement(new Fire(new Point2D(i,j)));
+				}
+			}
 
 		Debug.line(true);
 		removeRubble();
@@ -84,10 +92,13 @@ public class GameEngine implements Observer {
 		tick();
 		Debug.message("Player Moved", true);
 		Fire.propagate();
-		gameOver();
-		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
 
-		gui.update();  
+		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
+		gameOver();
+		gui.update(); 
+		Debug.line2(true);
+
+
 		turn ++;
 		Debug.attribute("Turn Number", turn, true);
 		// redesenha as imagens na GUI, tendo em conta as novas posicoes
@@ -107,25 +118,24 @@ public class GameEngine implements Observer {
 
 	private void gameOver() {
 		if(getElements(o->o instanceof Fire).isEmpty()) {
-			
-			
-			
-			
-			
+
+
+
+
 			username = JOptionPane.showInputDialog("Input username");
-			System.out.println(username);
 			List<Terrain> terrains_left = getElements(o->o instanceof Terrain && !((Terrain) o).burnt() && !(((Terrain) o) instanceof Land));
 			terrains_left.forEach(o->{LevelPoints += o.reward(); TreesLeft ++;});
-			Debug.attribute("Level Points: ", LevelPoints, true);
 			PersonalPoints = fireman.reward();
-			Debug.attribute("Personal Points", PersonalPoints, true);
-			Debug.attribute("Total Points", PersonalPoints + LevelPoints, true);
 			getStats();
-			System.out.println("A");
-			Scoreboard level1 = new Scoreboard("level1score.txt");
-			System.out.println("A");
-			level1.writeScore(username+"|"+LevelPoints+"|"+PersonalPoints);
-			System.out.println("A");
+			Scoreboard levelScore = new Scoreboard(lvl);
+			levelScore.add(username+"|"+LevelPoints+"|"+PersonalPoints);
+
+			gui.clearImages();
+			elementList.clear();
+			lvl++;
+			readLevel("level"+lvl+".txt");
+
+
 		}
 	}
 
@@ -143,6 +153,9 @@ public class GameEngine implements Observer {
 			File level = new File(file);
 			lvl = file.charAt(5)-48;
 			System.out.println(lvl);
+			LevelPoints = 0;
+			PersonalPoints = 0;
+			turn = 0;
 			Scanner lvl = new Scanner(level);
 			int numLine = 0;
 
@@ -173,6 +186,9 @@ public class GameEngine implements Observer {
 			LevelPoints = 0;
 			lvl.close();
 
+			gui.go();
+			start();
+
 		}catch(FileNotFoundException e) {
 			System.out.println("Ficheiro não encontrado");
 
@@ -200,6 +216,7 @@ public class GameEngine implements Observer {
 		return result;
 	}
 
+
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getElements(Predicate<GameElement> pred){
 		List<T> elements = new ArrayList<>();
@@ -210,28 +227,39 @@ public class GameEngine implements Observer {
 		return elements;
 	}
 
+
 	public int getTurn() {
 		return turn;
 	}
+
 
 	public void addElement(GameElement object) {
 		elementList.add(object);
 		gui.addImage(object);
 	}
 
+
 	public void removeElement(GameElement object) {
+		System.out.println("A");
+		getElements(o->o instanceof Fire).forEach(o->System.out.println(o));
+
 		elementList.remove(object);
+		System.out.println("B");
+		getElements(o->o instanceof Fire).forEach(o->System.out.println(o));
 		gui.removeImage(object);
 	}
+
 
 	public <T> void removeElements(List<T> toRemove) {
 		elementList.removeAll(toRemove);
 		toRemove.forEach(o-> gui.removeImage((ImageTile)o));
 	}
 
-	public static ImageMatrixGUI getGUI() {
+
+	public ImageMatrixGUI getGUI() {
 		return gui;
 	}
+
 
 	public GameElement findElement(Point2D position, Predicate<GameElement> pred) {
 		for(ImageTile ge : elementList) {
@@ -244,19 +272,25 @@ public class GameEngine implements Observer {
 		return null;
 	}
 
+
 	private void removeRubble() {
+		removeElements(getElements(o->o instanceof FuelBarrel && ((FuelBarrel) o).burnt()));
 		removeElements(getElements(o -> o instanceof Fire && ((Fire) o).doused()));
 		removeElements(getElements(o -> o instanceof Plane && ((Plane) o).scrap()));
 	}
 
+
 	public void tick() {
 		for(ImageTile ge : elementList)
-			((GameElement) ge).tick();	
+			if(ge instanceof Tickable)
+				((GameElement) ge).tick();	
 	}
+
 
 	public Fireman getFireman() {
 		return fireman;
 	}
+
 
 	public void setFireman(Fireman fireman) {
 		this.fireman = fireman;

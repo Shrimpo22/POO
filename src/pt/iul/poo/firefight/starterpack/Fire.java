@@ -2,8 +2,6 @@ package pt.iul.poo.firefight.starterpack;
 
 import java.util.List;
 import java.util.Random;
-
-import debug.Debug;
 import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
@@ -14,20 +12,21 @@ import pt.iul.ista.poo.utils.Point2D;
 public class Fire extends Mobile {
 
 	private boolean doused;
-	private final Terrain terrain;
+	private Terrain terrain;
 
 	public Fire(Point2D position) {
 		super(position, "fire", 1);
 		this.doused = false;
 		terrain = ((Terrain) game.findElement(position, o->o instanceof Terrain));
+		terrain.setAblaze(this);
 	}
 
 	public void douse(Direction dir) {
 		switch(dir) {
-		case UP : name = "water_up"; break;
-		case DOWN : name = "water_down"; break;
-		case LEFT : name = "water_left"; break;
-		case RIGHT : name = "water_right"; break;
+		case UP : setName("water_up"); break;
+		case DOWN : setName("water_down"); break;
+		case LEFT : setName("water_left"); break;
+		case RIGHT : setName("water_right"); break;
 
 		default: throw new IllegalArgumentException();
 		}
@@ -54,60 +53,54 @@ public class Fire extends Mobile {
 		return o.getPosition().equals(this.getPosition());
 
 	}
-	
-	private void spread() {
+
+	public void spread(List<Point2D> neighbours) {
+
 		if(doused)
 			return;
 		terrain.burn();
 		if(terrain.burnt()) {
 			game.removeElement(this);
-		}else
-			if(game.getTurn() > 2){
-				List<Point2D> neighbours = position.getNeighbourhoodPoints();
-				for(Point2D position : neighbours) {
-					position = GameEngine.clamp(position);
-					if(game.getFireman().getPosition().equals(position)) {
+		}else if(game.getTurn() > 1){
+			for(Point2D position : neighbours) {
+				position = GameEngine.clamp(position);
+				if(game.getFireman().getPosition().equals(position)) {
+					continue;
+				}
+				Fire toAdd = new Fire(position);
+				Random random = new Random();
+				if(!toAdd.terrain.burnt() && toAdd.terrain.getImmunity() == 0 && random.nextInt(20) < toAdd.terrain.getProbability()*20) {
+					if(game.getElements(o-> o instanceof Fire).contains(toAdd)) {	
 						continue;
 					}
-					//					Flammable neighbour = (Flammable)game.findElement(position, 0);
-					Fire toAdd = new Fire(position);
-					Random random = new Random();
-					if(!toAdd.terrain.burnt() && toAdd.terrain.getImmunity() == 0 && random.nextInt(20) < toAdd.terrain.getProbability()*20) {
-						if(game.getElements(o-> o instanceof Fire).contains(toAdd)) {	
-							continue;
-						}
-						game.addElement(toAdd);
-					}
+					game.addElement(toAdd);
 				}
 			}
+		}
 	}
 
 	public static void propagate() {
-		List<Fire> fires = game.getElements(o->o instanceof Fire);		
-		fires.forEach(n->{Debug.attribute(n, 4); n.spread();});
+		List<Fire> fires = game.getElements(o->o instanceof Fire);	
+
+		fires.forEach(n-> n.spread(n.getPosition().getNeighbourhoodPoints()));
 	}
 
 	public static int getCollumn() {
 		int mostFiresCollumn = 0;
 		int maxFiresCollumn = 0;
 		for(int x = 0; x<GameEngine.GRID_WIDTH; x++) {
-			Debug.message("Collumn "+x, 1);
 			int currentCollumnCount = 0;
 			for(int y = 0; y<GameEngine.GRID_HEIGHT; y++) {
 				Fire fire = (Fire) game.findElement(new Point2D(x,y), o->o instanceof Fire);
 				if( fire != null && !fire.doused) {
 					currentCollumnCount ++;
-					Debug.line2(1);
-					Debug.attribute(fire, 1);
 				}
-				//					Debug.line2(1);
 			}
 			if(currentCollumnCount >= maxFiresCollumn) {
 				mostFiresCollumn = x;
 				maxFiresCollumn = currentCollumnCount;
 			}
 		}		
-		Debug.attribute("Collumn with most fires: ",mostFiresCollumn, 1);
 		return mostFiresCollumn;
 	}
 }

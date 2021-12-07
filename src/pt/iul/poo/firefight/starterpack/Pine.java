@@ -4,7 +4,7 @@ import pt.iul.ista.poo.utils.Point2D;
 
 public class Pine extends Terrain {
 	private static final int BURN_TURNS = 10;
-	private static final double PROBABILITY = 0.05;
+	private static final double PROBABILITY = 1;
 	private static final int REWARD = 1000;
 
 	public Pine(Point2D position) {
