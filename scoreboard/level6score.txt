@@ -1,2 +1,5 @@
+asdasdasd|48000|0
 asdasd|46250|150
 asdasdasd|43250|450
+asdasdasd|37250|450
+|33750|225

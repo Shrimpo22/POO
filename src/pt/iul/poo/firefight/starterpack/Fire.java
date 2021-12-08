@@ -5,9 +5,6 @@ import java.util.Random;
 import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
-//Esta classe de exemplo esta' definida de forma muito basica, sem relacoes de heranca
-//Tem atributos e metodos repetidos em relacao ao que está definido noutras classes 
-//Isso sera' de evitar na versao a serio do projeto
 
 public class Fire extends Mobile {
 
@@ -40,22 +37,6 @@ public class Fire extends Mobile {
 	public boolean doused() {
 		return doused;
 	}
-
-	//	@Override
-	//	public boolean equals(Object obj) {
-	//
-	//		if(obj == this) {
-	//			return true;
-	//
-	//		}
-	//		if(!(obj instanceof Fire)) {
-	//			return false;
-	//
-	//		}
-	//		Fire o = (Fire) obj;
-	//		return o.getPosition().equals(this.getPosition());
-	//
-	//	}
 
 	public void spread(List<Point2D> neighbours) {
 

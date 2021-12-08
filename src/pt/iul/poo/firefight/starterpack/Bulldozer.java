@@ -35,6 +35,7 @@ public class Bulldozer extends Mobile implements Drivable {
 			game.getFireman().calculateReward(-25);
 			demolishes ++;
 		}
+		
 	}
 
 	public static int getDemolishes() {

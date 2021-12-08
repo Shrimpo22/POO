@@ -4,6 +4,8 @@ public interface Flammable {
 	
 	double getProbability();
 	
+	public void setProbability(int probability);
+	
 	int getTurnsToBurn();
 	
 	void setTurnsToBurn(int turnsToBurn);

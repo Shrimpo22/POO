@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
@@ -14,6 +15,7 @@ import pt.iul.ista.poo.gui.ImageMatrixGUI;
 import pt.iul.ista.poo.gui.ImageTile;
 import pt.iul.ista.poo.observer.Observed;
 import pt.iul.ista.poo.observer.Observer;
+import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
 // Note que esta classe e' um exemplo - nao pretende ser o inicio do projeto, 
@@ -49,15 +51,16 @@ public class GameEngine implements Observer {
 	private static final Point2D max = new Point2D(GameEngine.GRID_WIDTH - 1, GameEngine.GRID_HEIGHT - 1);
 
 
-	private static ImageMatrixGUI gui = ImageMatrixGUI.getInstance();  // Referencia para ImageMatrixGUI (janela de interface com o utilizador) 
+	private static ImageMatrixGUI gui = ImageMatrixGUI.getInstance();  
 
 
 
-	private List<ImageTile> elementList = new ArrayList<>() ;	// Lista de imagens
-	private Fireman fireman;			// Referencia para o bombeiro
+	private List<ImageTile> elementList = new ArrayList<>() ;	
+	private Fireman fireman;			
 	private static GameEngine INSTANCE;
 	private String username; 
 	private int lvl;
+	private boolean easter = false;
 
 	public static GameEngine getInstance() {
 		if (INSTANCE == null)
@@ -67,10 +70,7 @@ public class GameEngine implements Observer {
 
 	@Override
 	public void update(Observed source) {
-
-
-
-
+		
 		int key = ImageMatrixGUI.getInstance().keyPressed();
 		if(key==KeyEvent.VK_ESCAPE)System.exit(1);
 		if(key==KeyEvent.VK_J)getElements(o->o instanceof Fire).forEach(o->removeElement((Fire)o));
@@ -80,23 +80,27 @@ public class GameEngine implements Observer {
 					addElement(new Fire(new Point2D(i,j)));
 				}
 			}
+		if(key==KeyEvent.VK_E) {
+			easter = true;
+		}
 
 		removeRubble();
 		fireman.move();
 		tick();
 		Fire.propagate();
-		gameOver();
-
 
 		PersonalPoints = fireman.reward();
 		gui.setStatusMessage("Score: "+PersonalPoints);
+
+		if(easter)
+			easterTime();
+		gameOver();
 
 		gui.update(); 
 
 
 
 		turn ++;
-		// redesenha as imagens na GUI, tendo em conta as novas posicoes
 	}
 
 	public void start() {
@@ -127,8 +131,8 @@ public class GameEngine implements Observer {
 			if(lvl <= 6)
 				readLevel("levels/level"+lvl+".txt");
 			else {
-				
 				gui.dispose();
+				gui.setMessage("Congrats! You've finished the game! Next playthrough type 'E' at the beginning of the game ;)");
 				System.exit(-1);
 			}
 		}
@@ -178,6 +182,8 @@ public class GameEngine implements Observer {
 				}
 				numLine ++;
 			}
+			if(easter)
+				easterTime();
 			LevelPoints = 0;
 			lvl.close();
 
@@ -276,6 +282,32 @@ public class GameEngine implements Observer {
 				((Tickable) ge).tick();	
 	}
 
+
+	public boolean isEaster() {
+		return easter;
+	}
+
+	public void easterTime() {
+
+		int key = ImageMatrixGUI.getInstance().keyPressed();
+		
+		fireman.setName("santa_down");
+		if(Direction.isDirection(key)) {
+			Direction dir = Direction.directionFor(key);
+			
+			switch(dir) {
+			case UP : fireman.setName("santa_up"); break;
+			case DOWN : fireman.setName("santa_down"); break;
+			case LEFT : fireman.setName("santa_left"); break;
+			case RIGHT: fireman.setName("santa_right"); break;
+			}
+		}
+
+		Random random = new Random();
+		getElements(o->o instanceof Fire).forEach(o->((Fire)o).setName("egg"+random.nextInt(3)));
+		getElements(o->o instanceof Terrain).forEach(o->{if (o instanceof Land) return; ((Terrain)o).setProbability(1);});
+		getElements(o->o instanceof Terrain && ((Terrain)o).burnt()).forEach(o-> {addElement(new Land(((Terrain)o).getPosition())); addElement(new Gift(((Terrain)o).getPosition()));});
+	}
 
 	public Fireman getFireman() {
 		return fireman;

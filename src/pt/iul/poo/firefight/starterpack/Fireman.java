@@ -31,6 +31,9 @@ public class Fireman extends Mobile implements Rewardable, Movable{
 
 	public void move() {
 		int key = ImageMatrixGUI.getInstance().keyPressed();
+		
+	
+			
 		if(plane != null && plane.scrap()) {
 			planeActivated = false;
 			plane =null;
@@ -57,10 +60,15 @@ public class Fireman extends Mobile implements Rewardable, Movable{
 			default:
 				break;
 			}
+			
 			Fire fire = (Fire) game.findElement(getPosition().plus(dir.asVector()), o->o instanceof Fire);
 			Drivable temp = (Drivable) game.findElement(getPosition().plus(dir.asVector()), o->o instanceof Drivable);
 
 			if(fire != null) {
+				if(game.isEaster()) {
+					setPosition(GameEngine.clamp(getPosition().plus(dir.asVector())));
+					game.removeElement(fire);
+				}
 				if(vehicle == null) {
 
 					fire.douse(dir);

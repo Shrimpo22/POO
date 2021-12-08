@@ -34,6 +34,10 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 	public double getProbability() {
 		return probability;
 	}
+	
+	public void setProbability(int probability) {
+		this.probability = probability;
+	}
 
 	public int getTurnsToBurn() {
 		return turnsToBurn;

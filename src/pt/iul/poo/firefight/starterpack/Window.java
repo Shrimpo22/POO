@@ -26,7 +26,6 @@ public class Window extends Canvas{
 	}
 	
 	public void setVisibility(boolean b) {
-		System.out.println(b);
 		frame.setVisible(b);
 	}
 
