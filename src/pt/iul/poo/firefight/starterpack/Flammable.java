@@ -2,10 +2,6 @@ package pt.iul.poo.firefight.starterpack;
 
 public interface Flammable {
 	
-	void setAblaze(Fire fire);
-	
-	Fire getFire();
-	
 	double getProbability();
 	
 	int getTurnsToBurn();
@@ -13,6 +9,8 @@ public interface Flammable {
 	void setTurnsToBurn(int turnsToBurn);
 	
 	int getImmunity();
+	
+	void setVulnerability();
 	
 	boolean burnt();
 	

@@ -1,5 +1,6 @@
 package pt.iul.poo.firefight.starterpack;
 
+
 import pt.iul.ista.poo.utils.Point2D;
 
 public class FuelBarrel extends Terrain{
@@ -18,11 +19,19 @@ public class FuelBarrel extends Terrain{
 		if(getTurnsToBurn() > 1)
 			setTurnsToBurn(getTurnsToBurn()-1) ;
 		else if(canEnter){
-			
-			System.out.println("Boosh!");
 			canEnter=false;
 			game.addElement(generate('_', getPosition()));
-			getFire().spread(getPosition().getWideNeighbourhoodPoints());
+			for(Point2D point : getPosition().getWideNeighbourhoodPoints())
+				if(game.findElement(point, o-> o instanceof Terrain && ((Terrain)o).getProbability()>0) != null) {
+					if(game.findElement(point, o-> o instanceof Fireman || o instanceof FiremanBot) == null) {
+
+						Fire fire = new Fire(point);
+						if(!game.getElements(o->o instanceof Fire).contains(fire)) {
+							fire.getTerrain().setVulnerability();
+							game.addElement(fire); 
+						}
+					}
+				}
 			setBurnt(true);
 		}
 	}

@@ -9,5 +9,6 @@ eeeemm____
 eeeeemm___
 eeeeemmmmm
 Fireman 5 3
-Bulldozer 5 5
+Bulldozer 5 4
+FiremanBot 5 5
 Fire 2 2

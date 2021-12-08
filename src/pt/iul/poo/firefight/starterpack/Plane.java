@@ -3,7 +3,7 @@ package pt.iul.poo.firefight.starterpack;
 import pt.iul.ista.poo.utils.Direction;
 import pt.iul.ista.poo.utils.Point2D;
 
-public class Plane extends Mobile implements Tickable{
+public class Plane extends Mobile implements Movable, Tickable{
 	private boolean scrap;
 	private Fireman fireman;
 	private static int douseCounter = 0;

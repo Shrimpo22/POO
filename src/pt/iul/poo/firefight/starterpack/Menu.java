@@ -34,7 +34,7 @@ public class Menu extends Canvas implements Runnable{
 
 	public Menu() {
 		w =new Window(WIDTH,HEIGHT,"Firefight!",this);
-		menuListener = new MenuListener(this);
+		menuListener = new MenuListener();
 		this.addMouseListener(menuListener);
 		line = new BGLine();
 	}
@@ -98,15 +98,6 @@ public class Menu extends Canvas implements Runnable{
 		
 		g.setColor(colorbg);
 		g.fillRect(0,0,WIDTH,HEIGHT);
-
-		//		if(line == HEIGHT)
-		//			line=0;
-		//		for(int i = 0; i<WIDTH; i++) {
-		//			g.setColor(lineColor);
-		//			lineColor.setColor();
-		//			g.fillRect(i,line,WIDTH,1);
-		//			line++;
-		//		}
 		
 		line.render(g);
 		menuListener.render(g);
@@ -115,13 +106,6 @@ public class Menu extends Canvas implements Runnable{
 	}
 
 	private class MenuListener extends MouseAdapter{
-		private Menu menu;
-
-
-		public MenuListener(Menu menu) {
-			this.menu = menu;
-		}
-
 
 		public void mousePressed(MouseEvent e) {
 			int mx = e.getX();

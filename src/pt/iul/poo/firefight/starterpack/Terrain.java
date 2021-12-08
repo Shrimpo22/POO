@@ -10,7 +10,6 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 	private boolean burnt;
 	private double probability;
 	private int temporalImmunity = 0;
-	private Fire fire;
 	
 	public Terrain(Point2D position, String name, int layer, int BURN_TURNS, double probability, int reward) {
 		super(position, name, layer);
@@ -33,15 +32,6 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 		default: throw new IllegalArgumentException();
 		}
 	}
-
-	public void setAblaze(Fire fire) {
-		this.fire = fire;
-	}
-	
-	public Fire getFire() {
-		return fire;
-	}
-	
 	
 	public double getProbability() {
 		return probability;
@@ -58,6 +48,10 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 
 	public int getImmunity() {
 		return temporalImmunity;
+	}
+	
+	public void setVulnerability() {
+		temporalImmunity = 0;
 	}
 
 	public boolean burnt() {
@@ -77,8 +71,7 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 	}
 
 	public void douse() {
-		fire = null;
-		temporalImmunity = 5;
+		temporalImmunity = 2;
 	}
 
 	public int reward() {

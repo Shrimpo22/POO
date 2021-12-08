@@ -22,6 +22,6 @@ public class Launcher {
 		
 		GameEngine game = GameEngine.getInstance();
 		gui.registerObserver(game);
-		game.readLevel("level1.txt");
+		game.readLevel(".txt");
 	}
 }

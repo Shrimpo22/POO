@@ -10,11 +10,11 @@ import java.awt.event.KeyEvent;
 // Tem atributos e metodos repetidos em relacao ao que est� definido noutras classes 
 // Isso sera' de evitar na versao a serio do projeto
 
-public class Fireman extends Mobile implements Rewardable{
+public class Fireman extends Mobile implements Rewardable, Movable{
 
 	private int reward;
-	private boolean inBulldozer;
-	private Bulldozer bulldozer;
+	private boolean inVehicle;
+	private Drivable vehicle;
 	private boolean planeActivated;
 	private Plane plane;
 
@@ -24,14 +24,11 @@ public class Fireman extends Mobile implements Rewardable{
 
 	public Fireman(Point2D position) {
 		super(position, "fireman", 3);
-		this.inBulldozer=false;
+		this.inVehicle=false;
 		this.planeActivated = false;
 		this.reward = 0;
 	}
 
-	// Move numa direcao aleatoria 
-	@SuppressWarnings("incomplete-switch")
-	@Override
 	public void move() {
 		int key = ImageMatrixGUI.getInstance().keyPressed();
 		if(plane != null && plane.scrap()) {
@@ -39,8 +36,9 @@ public class Fireman extends Mobile implements Rewardable{
 			plane =null;
 		}
 		if(key == KeyEvent.VK_ENTER) {
-			if(inBulldozer) {
-				inBulldozer = false;
+			if(inVehicle) {
+				vehicle = null;
+				inVehicle = false;
 				setLayer(3);
 				return;
 			}
@@ -56,28 +54,38 @@ public class Fireman extends Mobile implements Rewardable{
 			switch(dir) {
 			case LEFT : setName("fireman_left"); break;
 			case RIGHT: setName("fireman_right"); break;
+			default:
+				break;
 			}
 			Fire fire = (Fire) game.findElement(getPosition().plus(dir.asVector()), o->o instanceof Fire);
-			Bulldozer temp = (Bulldozer) game.findElement(getPosition().plus(dir.asVector()), o->o instanceof Bulldozer);
+			Drivable temp = (Drivable) game.findElement(getPosition().plus(dir.asVector()), o->o instanceof Drivable);
 
 			if(fire != null) {
-				if(!inBulldozer) {
-					//					Terrain terrain = (Terrain) game.findElement(position.plus(dir.asVector()), 0);
+				if(vehicle == null) {
+
 					fire.douse(dir);
 					douseCounter ++;
 					reward += 50;
+				} else if(vehicle instanceof Firetruck) {
+					for(Point2D point : fire.getPosition().getFrontRect(dir, 3, 2)) {
+						point = GameEngine.clamp(point);
+						Fire toDouse = (Fire) game.findElement(point, o->o instanceof Fire);
+						if(toDouse != null) {
+							toDouse.douse(dir);
+						}
+					}
 				}
 			}else {
 				if(temp != null) {
-					if(!inBulldozer) {
-						inBulldozer = true;
+					if(!inVehicle) {
+						inVehicle = true;
 						setPosition(GameEngine.clamp(getPosition().plus(dir.asVector())));
 						setLayer(-1);
 					}
-					bulldozer = temp;
+					vehicle = temp;
 				}else{
-					if(inBulldozer){
-						bulldozer.move();
+					if(inVehicle){
+						vehicle.drive();
 						reward -= 25;
 					}
 					setPosition(GameEngine.clamp(getPosition().plus(dir.asVector())));
@@ -91,7 +99,7 @@ public class Fireman extends Mobile implements Rewardable{
 		game.addElement(plane);
 	}
 
-	
+
 
 	public void calculateReward(int number) {
 		reward += number;

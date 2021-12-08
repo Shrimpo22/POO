@@ -18,7 +18,6 @@ public class Fire extends Mobile {
 		super(position, "fire", 1);
 		this.doused = false;
 		terrain = ((Terrain) game.findElement(position, o->o instanceof Terrain));
-		terrain.setAblaze(this);
 	}
 
 	public void douse(Direction dir) {
@@ -34,6 +33,10 @@ public class Fire extends Mobile {
 		terrain.douse();
 	}
 
+	public Terrain getTerrain() {
+		return terrain;
+	}
+	
 	public boolean doused() {
 		return doused;
 	}
@@ -64,7 +67,7 @@ public class Fire extends Mobile {
 		}else if(game.getTurn() > 1){
 			for(Point2D position : neighbours) {
 				position = GameEngine.clamp(position);
-				if(game.getFireman().getPosition().equals(position)) {
+				if(game.findElement(position, o-> o instanceof Fireman || o instanceof FiremanBot) != null) {
 					continue;
 				}
 				Fire toAdd = new Fire(position);

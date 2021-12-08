@@ -283,7 +283,7 @@ public class GameEngine implements Observer {
 	public void tick() {
 		for(ImageTile ge : elementList)
 			if(ge instanceof Tickable)
-				((GameElement) ge).tick();	
+				((Tickable) ge).tick();	
 	}
 
 
