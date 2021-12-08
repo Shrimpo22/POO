@@ -118,10 +118,6 @@ public class GameEngine implements Observer {
 
 	private void gameOver() {
 		if(getElements(o->o instanceof Fire).isEmpty()) {
-
-
-
-
 			username = JOptionPane.showInputDialog("Input username");
 			List<Terrain> terrains_left = getElements(o->o instanceof Terrain && !((Terrain) o).burnt() && !(((Terrain) o) instanceof Land));
 			terrains_left.forEach(o->{LevelPoints += o.reward(); TreesLeft ++;});
@@ -133,9 +129,7 @@ public class GameEngine implements Observer {
 			gui.clearImages();
 			elementList.clear();
 			lvl++;
-			readLevel("level"+lvl+".txt");
-
-
+			readLevel("levels/level"+lvl+".txt");
 		}
 	}
 
@@ -151,8 +145,7 @@ public class GameEngine implements Observer {
 	public void readLevel(String file){
 		try {
 			File level = new File(file);
-			lvl = file.charAt(5)-48;
-			System.out.println(lvl);
+			lvl = file.charAt(12)-48;
 			LevelPoints = 0;
 			PersonalPoints = 0;
 			turn = 0;
@@ -240,12 +233,7 @@ public class GameEngine implements Observer {
 
 
 	public void removeElement(GameElement object) {
-		System.out.println("A");
-		getElements(o->o instanceof Fire).forEach(o->System.out.println(o));
-
 		elementList.remove(object);
-		System.out.println("B");
-		getElements(o->o instanceof Fire).forEach(o->System.out.println(o));
 		gui.removeImage(object);
 	}
 

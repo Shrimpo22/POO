@@ -25,11 +25,13 @@ public class FuelBarrel extends Terrain{
 				if(game.findElement(point, o-> o instanceof Terrain && ((Terrain)o).getProbability()>0) != null) {
 					if(game.findElement(point, o-> o instanceof Fireman || o instanceof FiremanBot) == null) {
 
+
+						if(game.findElement(point, o->o instanceof Fire) != null)
+							continue;
+
 						Fire fire = new Fire(point);
-						if(!game.getElements(o->o instanceof Fire).contains(fire)) {
-							fire.getTerrain().setVulnerability();
-							game.addElement(fire); 
-						}
+						fire.getTerrain().setVulnerability();
+						game.addElement(fire); 
 					}
 				}
 			setBurnt(true);

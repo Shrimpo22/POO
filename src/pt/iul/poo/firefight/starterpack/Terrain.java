@@ -1,6 +1,4 @@
 package pt.iul.poo.firefight.starterpack;
-
-import debug.Debug;
 import pt.iul.ista.poo.utils.Point2D;
 
 public abstract class Terrain extends GameElement implements Flammable, Rewardable, Tickable{
@@ -10,7 +8,7 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 	private boolean burnt;
 	private double probability;
 	private int temporalImmunity = 0;
-	
+
 	public Terrain(Point2D position, String name, int layer, int BURN_TURNS, double probability, int reward) {
 		super(position, name, layer);
 		this.reward = reward;
@@ -32,7 +30,7 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 		default: throw new IllegalArgumentException();
 		}
 	}
-	
+
 	public double getProbability() {
 		return probability;
 	}
@@ -40,16 +38,16 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 	public int getTurnsToBurn() {
 		return turnsToBurn;
 	}
-	
+
 	public void setTurnsToBurn(int turnsToBurn) {
 		this.turnsToBurn = turnsToBurn;
-		
+
 	}
 
 	public int getImmunity() {
 		return temporalImmunity;
 	}
-	
+
 	public void setVulnerability() {
 		temporalImmunity = 0;
 	}
@@ -57,13 +55,12 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 	public boolean burnt() {
 		return burnt;
 	}
-	
+
 	public void setBurnt(boolean burnt) {
 		this.burnt = burnt;
 	}
 
 	public void burn() {
-		Debug.attribute("Terrain["+ this +"], turns to burn: ", turnsToBurn, 2);
 		if(turnsToBurn > 1)
 			turnsToBurn --;
 		else
@@ -71,13 +68,13 @@ public abstract class Terrain extends GameElement implements Flammable, Rewardab
 	}
 
 	public void douse() {
-		temporalImmunity = 2;
+		temporalImmunity = 5;
 	}
 
 	public int reward() {
 		return reward;
 	}
-	
+
 	@Override
 	public void tick() {
 		if(temporalImmunity > 0)

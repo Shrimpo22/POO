@@ -14,7 +14,7 @@ public class Scoreboard{
 
 
 	public Scoreboard(int lvl) {
-		FILE_NAME = "level"+lvl+"score.txt";
+		FILE_NAME = "scoreboard/level"+lvl+"score.txt";
 		scores = new PriorityQueue<>();
 		readScore();
 	}

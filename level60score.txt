@@ -1,5 +1,0 @@
-null|30250|0
-null|30250|0
-null|4000|0
-asdadasdasd|3500|-500
-asdasdasd|2000|175

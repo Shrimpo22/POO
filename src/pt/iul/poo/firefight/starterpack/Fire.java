@@ -36,26 +36,26 @@ public class Fire extends Mobile {
 	public Terrain getTerrain() {
 		return terrain;
 	}
-	
+
 	public boolean doused() {
 		return doused;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-
-		if(obj == this) {
-			return true;
-
-		}
-		if(!(obj instanceof Fire)) {
-			return false;
-
-		}
-		Fire o = (Fire) obj;
-		return o.getPosition().equals(this.getPosition());
-
-	}
+	//	@Override
+	//	public boolean equals(Object obj) {
+	//
+	//		if(obj == this) {
+	//			return true;
+	//
+	//		}
+	//		if(!(obj instanceof Fire)) {
+	//			return false;
+	//
+	//		}
+	//		Fire o = (Fire) obj;
+	//		return o.getPosition().equals(this.getPosition());
+	//
+	//	}
 
 	public void spread(List<Point2D> neighbours) {
 
@@ -73,7 +73,7 @@ public class Fire extends Mobile {
 				Fire toAdd = new Fire(position);
 				Random random = new Random();
 				if(!toAdd.terrain.burnt() && toAdd.terrain.getImmunity() == 0 && random.nextInt(20) < toAdd.terrain.getProbability()*20) {
-					if(game.getElements(o-> o instanceof Fire).contains(toAdd)) {	
+					if(game.findElement(position, o->o instanceof Fire) != null) {	
 						continue;
 					}
 					game.addElement(toAdd);
