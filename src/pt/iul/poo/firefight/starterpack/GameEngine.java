@@ -1,7 +1,5 @@
 package pt.iul.poo.firefight.starterpack;
 
-import debug.Debug;
-
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,15 +68,12 @@ public class GameEngine implements Observer {
 	@Override
 	public void update(Observed source) {
 
-		gui.setStatusMessage("Hello");
+
 
 
 		int key = ImageMatrixGUI.getInstance().keyPressed();
 		if(key==KeyEvent.VK_ESCAPE)System.exit(1);
-		if(key==KeyEvent.VK_J)
-			Debug.on(-1);
-		Debug.carryOut(() -> {getElements(o->o instanceof Fire).forEach(o->removeElement((Fire)o));}, -1);
-		Debug.off(-1);
+		if(key==KeyEvent.VK_J)getElements(o->o instanceof Fire).forEach(o->removeElement((Fire)o));
 		if(key==KeyEvent.VK_F)
 			for(int i = 0; i<GRID_WIDTH; i++) {
 				for( int j=0; j<GRID_HEIGHT; j++){
@@ -86,21 +81,21 @@ public class GameEngine implements Observer {
 				}
 			}
 
-		Debug.line(true);
 		removeRubble();
 		fireman.move();
 		tick();
-		Debug.message("Player Moved", true);
 		Fire.propagate();
-
-		//		fires.forEach(n -> {Debug.line2(1); Debug.attribute("Fire!", 1);});
 		gameOver();
+
+
+		PersonalPoints = fireman.reward();
+		gui.setStatusMessage("Score: "+PersonalPoints);
+
 		gui.update(); 
-		Debug.line2(true);
+
 
 
 		turn ++;
-		Debug.attribute("Turn Number", turn, true);
 		// redesenha as imagens na GUI, tendo em conta as novas posicoes
 	}
 
@@ -121,7 +116,7 @@ public class GameEngine implements Observer {
 			username = JOptionPane.showInputDialog("Input username");
 			List<Terrain> terrains_left = getElements(o->o instanceof Terrain && !((Terrain) o).burnt() && !(((Terrain) o) instanceof Land));
 			terrains_left.forEach(o->{LevelPoints += o.reward(); TreesLeft ++;});
-			PersonalPoints = fireman.reward();
+
 			getStats();
 			Scoreboard levelScore = new Scoreboard(lvl);
 			levelScore.add(username+"|"+LevelPoints+"|"+PersonalPoints);
@@ -129,7 +124,13 @@ public class GameEngine implements Observer {
 			gui.clearImages();
 			elementList.clear();
 			lvl++;
-			readLevel("levels/level"+lvl+".txt");
+			if(lvl <= 6)
+				readLevel("levels/level"+lvl+".txt");
+			else {
+				
+				gui.dispose();
+				System.exit(-1);
+			}
 		}
 	}
 
@@ -148,6 +149,7 @@ public class GameEngine implements Observer {
 			lvl = file.charAt(12)-48;
 			LevelPoints = 0;
 			PersonalPoints = 0;
+			gui.setStatusMessage("Score: 0");
 			turn = 0;
 			Scanner lvl = new Scanner(level);
 			int numLine = 0;

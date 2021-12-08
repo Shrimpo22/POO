@@ -72,6 +72,7 @@ public class Fireman extends Mobile implements Rewardable, Movable{
 						Fire toDouse = (Fire) game.findElement(point, o->o instanceof Fire);
 						if(toDouse != null) {
 							toDouse.douse(dir);
+							reward+=25;
 						}
 					}
 				}
@@ -86,7 +87,6 @@ public class Fireman extends Mobile implements Rewardable, Movable{
 				}else{
 					if(inVehicle){
 						vehicle.drive();
-						reward -= 25;
 					}
 					setPosition(GameEngine.clamp(getPosition().plus(dir.asVector())));
 				}

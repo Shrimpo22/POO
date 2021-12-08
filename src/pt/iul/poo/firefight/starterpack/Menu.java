@@ -110,9 +110,7 @@ public class Menu extends Canvas implements Runnable{
 		public void mousePressed(MouseEvent e) {
 			int mx = e.getX();
 			int my = e.getY();
-			System.out.println(mx);
-			System.out.println(my);
-
+			
 			if(mouseOver(mx, my, 210, 150, 200, 64)) {
 				w.setVisibility(false);
 				ImageMatrixGUI gui = ImageMatrixGUI.getInstance();
@@ -120,7 +118,7 @@ public class Menu extends Canvas implements Runnable{
 
 				GameEngine game = GameEngine.getInstance();
 				gui.registerObserver(game);
-				game.readLevel("level1.txt");
+				game.readLevel("levels/level1.txt");
 			}
 		}
 

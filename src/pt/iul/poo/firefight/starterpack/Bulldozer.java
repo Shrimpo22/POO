@@ -32,6 +32,7 @@ public class Bulldozer extends Mobile implements Drivable {
 			game.removeElement(terrain);
 			terrain = new Land(this.getPosition());
 			game.addElement(terrain);
+			game.getFireman().calculateReward(-25);
 			demolishes ++;
 		}
 	}

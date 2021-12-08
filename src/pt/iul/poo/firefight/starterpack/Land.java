@@ -1,6 +1,5 @@
 package pt.iul.poo.firefight.starterpack;
 
-import debug.Debug;
 import pt.iul.ista.poo.utils.Point2D;
 
 public class Land extends Terrain {

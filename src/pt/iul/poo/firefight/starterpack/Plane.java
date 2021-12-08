@@ -25,6 +25,7 @@ public class Plane extends Mobile implements Movable, Tickable{
 		if(game.getGUI().isWithinBounds(downTile)) {
 			Fire fire1 = (Fire) game.findElement(downTile, o->o instanceof Fire);
 			if(fire1 != null) {
+				fireman.calculateReward(50);
 				fire1.douse(Direction.DOWN);
 				douseCounter ++;
 			}
@@ -32,11 +33,12 @@ public class Plane extends Mobile implements Movable, Tickable{
 		if(game.getGUI().isWithinBounds(down2Tile)) {
 			Fire fire2 = (Fire) game.findElement(down2Tile, o->o instanceof Fire);
 			if(fire2 != null) {
+				fireman.calculateReward(50);
 				fire2.douse(Direction.DOWN);
 				douseCounter ++;
 			}
 		}
-		fireman.calculateReward(100);
+		
 	}
 
 	public static int getDouses() {

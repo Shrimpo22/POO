@@ -17,11 +17,10 @@ public class FiremanBot extends Mobile implements Tickable{
 	@SuppressWarnings("incomplete-switch")
 	public void move(){
 
-		if(random.nextInt(100) < iq) {
+		if(random.nextInt(100)*1.5 < iq) {
 			if(scout()== null)
 				return;
 			Direction charge = getPosition().directionTo(scout());
-			System.out.println("Charge! "+charge);
 
 			switch(charge) {
 			case LEFT : setName("firemanbot_left"); break;
@@ -64,7 +63,6 @@ public class FiremanBot extends Mobile implements Tickable{
 				fireToGo = fire.getPosition();
 			}
 		}
-		System.out.println("Fire bot!"+ fireToGo);
 		return fireToGo;
 	}
 

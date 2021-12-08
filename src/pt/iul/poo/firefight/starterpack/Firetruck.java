@@ -8,7 +8,7 @@ public class Firetruck extends Mobile implements Drivable{
 	public Firetruck(Point2D position) {
 		super(position, "firetruck", 2);
 	}
-
+	
 	public void drive() {
 		int key = game.getGUI().keyPressed();
 		if(!Direction.isDirection(key))
