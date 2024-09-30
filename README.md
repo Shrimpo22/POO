@@ -1,5 +1,5 @@
 ## FireFight
-Firefight is a simple 2D game where you control a fireman and have to douse the fires before they spread!
+Firefight is a simple 2D game where you control a fireman using the keyboard arrows and have to douse the fires before they spread by colliding with them!
 The game has a scoring system rewarding you for every fire you extinguish and for each tree you can protect!
 
 ![ApagarFogo-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/4ec4d2fc-4d49-47fa-bbba-8901b1ee70f9)
@@ -19,3 +19,7 @@ In some levels you'll also have the help of fellow fireman!
 Sometimes the firetruck will also be available so you can douse more fires at once!
 
 ![FireTruck-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/8de23c23-5e36-4cbb-a767-ed2e35db0f10)
+
+You can also call a plane to help you by pressing 'p'!
+
+![GravaodeEcr2024-09-30212132-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/0ee20dda-823c-4aa5-889c-3dd3bdc5bce2)
